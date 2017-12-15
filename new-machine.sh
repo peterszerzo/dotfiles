@@ -9,6 +9,7 @@ brew tap caskroom/versions
 
 # Brew install basics
 brew install z tmux zsh zsh-completions
+brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # Desktop apps
