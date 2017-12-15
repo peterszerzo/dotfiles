@@ -10,7 +10,6 @@ set nocompatible
 set noswapfile
 set nowrap
 set number
-set path+=**
 set relativenumber
 set shiftwidth=2
 set showcmd
@@ -41,6 +40,7 @@ Plug 'vim-syntastic/syntastic'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 call plug#end()
 
@@ -52,6 +52,8 @@ let g:elm_detailed_complete = 1
 let g:elm_format_autosave = 1
 let g:elm_syntastic_show_warnings = 1
 let g:syntastic_typescript_tsc_fname = ''
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
 
 set t_Co=256
 set background=dark
