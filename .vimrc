@@ -25,10 +25,10 @@ syntax enable
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
 noremap <Leader>s :update<CR>
 :imap jk <Esc>
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 2, 1)<CR>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 2, 1)<CR>
-noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 2, 2)<CR>
-noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 2, 2)<CR>
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 8, 1)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 8, 1)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 8, 2)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 8, 2)<CR>
 
 " Plugins
 call plug#begin('~/.vim/plugged')
