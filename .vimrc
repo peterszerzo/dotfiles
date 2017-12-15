@@ -53,7 +53,7 @@ let g:elm_format_autosave = 1
 let g:elm_syntastic_show_warnings = 1
 let g:syntastic_typescript_tsc_fname = ''
 let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_cmd = 'CtrlP :pwd'
 
 set t_Co=256
 set background=dark
