@@ -24,6 +24,7 @@ syntax enable
 " Keybindings
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
 noremap <Leader>s :update<CR>
+noremap <Leader>v :b#<CR>
 :imap jk <Esc>
 noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 8, 1)<CR>
 noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 8, 1)<CR>
