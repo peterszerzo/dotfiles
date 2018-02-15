@@ -25,12 +25,27 @@ syntax enable
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
 noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
-noremap <Leader>v :b#<CR>
 :imap jk <Esc>
+noremap / /\v
+noremap Y y$
+noremap <C-h> <C-w>h
+noremap <C-l> <C-w>l
+noremap <C-k> <C-w>k
+noremap <C-j> <C-w>j
+nnoremap <Enter> @@
+" Store big enough changes in the jumplist
+nnoremap <expr> k (v:count > 5 ? "m'" . v:count : '') . 'k'
+nnoremap <expr> j (v:count > 5 ? "m'" . v:count : '') . 'j'
+" Move to previous file
+noremap <Leader>v :b#<CR>
+" Smooth scroll mappings
 noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 8, 1)<CR>
 noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 8, 1)<CR>
-noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 8, 2)<CR>
-noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 8, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 4, 1)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 4, 1)<CR>
+" Command mode mappings
+cnoremap <C-a> <Home>
+cnoremap <C-b> <End>
 
 " Plugins
 call plug#begin('~/.vim/plugged')
