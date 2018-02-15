@@ -23,6 +23,7 @@ syntax enable
 
 " Keybindings
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
+noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
 noremap <Leader>v :b#<CR>
 :imap jk <Esc>
@@ -33,16 +34,16 @@ noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 8, 2)<CR>
 
 " Plugins
 call plug#begin('~/.vim/plugged')
-Plug 'altercation/vim-colors-solarized'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'elmcast/elm-vim'
-Plug 'terryma/vim-smooth-scroll'
-Plug 'sheerun/vim-polyglot'
-Plug 'vim-syntastic/syntastic'
 Plug 'scrooloose/nerdtree'
+Plug 'sheerun/vim-polyglot'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
+Plug 'terryma/vim-smooth-scroll'
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'sonph/onehalf', {'rtp': 'vim/'}
+Plug 'vim-airline/vim-airline'
 call plug#end()
 
 " Plugin configurations
@@ -51,8 +52,6 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 let g:polyglot_disabled = ['elm']
 let g:elm_detailed_complete = 1
 let g:elm_format_autosave = 1
-let g:elm_syntastic_show_warnings = 1
-let g:syntastic_typescript_tsc_fname = ''
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
 
