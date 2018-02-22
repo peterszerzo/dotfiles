@@ -25,10 +25,16 @@ syntax enable
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
 noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
+" Feed word under the cursor into CtrlP and move to file.
+map <Leader>g <C-P><C-\>w<CR>
 :imap jk <Esc>
 noremap / /\v
 noremap Y y$
-noremap <C-h> <C-w>h
+" Make Ctrl+H bounce between panes instead of going left explicitly.
+" Since I only use a single Vim window + NERDTree, this replicates
+" a move-to-left motion in addition to jumping back and forth the 
+" same way tmux bindings work.
+noremap <C-h> <C-w>w
 noremap <C-l> <C-w>l
 noremap <C-k> <C-w>k
 noremap <C-j> <C-w>j
