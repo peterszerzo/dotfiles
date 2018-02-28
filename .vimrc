@@ -44,11 +44,6 @@ nnoremap <expr> k (v:count > 5 ? "m'" . v:count : '') . 'k'
 nnoremap <expr> j (v:count > 5 ? "m'" . v:count : '') . 'j'
 " Move to previous file
 noremap <Leader>v :b#<CR>
-" Smooth scroll mappings
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 8, 1)<CR>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 8, 1)<CR>
-noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 4, 1)<CR>
-noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 4, 1)<CR>
 " Command mode mappings
 cnoremap <C-a> <Home>
 cnoremap <C-b> <End>
@@ -60,7 +55,6 @@ Plug 'elmcast/elm-vim'
 Plug 'scrooloose/nerdtree'
 Plug 'sheerun/vim-polyglot'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
-Plug 'terryma/vim-smooth-scroll'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
