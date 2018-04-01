@@ -1,7 +1,7 @@
 " Settings
 set autoread
 set autoindent
-set cindent
+set backspace=2
 set cursorline
 set expandtab
 set hlsearch
@@ -9,16 +9,16 @@ set incsearch
 set nocompatible
 set noswapfile
 set nowrap
+set encoding=utf-8
 set number
 set relativenumber
 set shiftwidth=2
-set showcmd
-set smartindent
 set softtabstop=2
+set showcmd
 set wildmenu
 set wildmode=longest:full,full
 set wildignore=*/node_modules/*,*/elm-stuff/*,*/lib/*,*/public/*
-filetype plugin on
+filetype plugin indent on
 syntax enable
 
 " Keybindings
@@ -50,15 +50,18 @@ cnoremap <C-b> <End>
 
 " Plugins
 call plug#begin('~/.vim/plugged')
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'elmcast/elm-vim'
-Plug 'scrooloose/nerdtree'
 Plug 'sheerun/vim-polyglot'
-Plug 'sonph/onehalf', {'rtp': 'vim/'}
-Plug 'tpope/vim-fugitive'
+Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-fugitive'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
+Plug 'w0rp/ale'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'vim-airline/vim-airline'
+Plug 'Quramy/tsuquyomi'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
 call plug#end()
 
 " Plugin configurations
@@ -69,6 +72,8 @@ let g:elm_detailed_complete = 1
 let g:elm_format_autosave = 1
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
+let g:ale_sign_column_always = 1
+let g:ale_lint_on_text_changed = 'never'
 
 set t_Co=256
 set background=dark
