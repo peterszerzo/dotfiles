@@ -25,6 +25,9 @@ syntax enable
 noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
 noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
+noremap <Leader>h :noh<CR>
+noremap <Leader>x :q!<CR>
+noremap <Leader>o :Gbrowse!<CR>
 " Feed word under the cursor into CtrlP and move to file.
 map <Leader>g <C-P><C-\>w<CR>
 :imap jk <Esc>
@@ -55,12 +58,14 @@ Plug 'sheerun/vim-polyglot'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
 Plug 'w0rp/ale'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'vim-airline/vim-airline'
 Plug 'Quramy/tsuquyomi'
+Plug 'mhartington/oceanic-next'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 call plug#end()
 
