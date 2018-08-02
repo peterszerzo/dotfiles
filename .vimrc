@@ -46,7 +46,7 @@ nnoremap <Enter> @@
 nnoremap <expr> k (v:count > 5 ? "m'" . v:count : '') . 'k'
 nnoremap <expr> j (v:count > 5 ? "m'" . v:count : '') . 'j'
 " Move to previous file
-noremap <Leader>v :b#<CR>
+noremap <Leader>b :b#<CR>
 " Command mode mappings
 cnoremap <C-a> <Home>
 cnoremap <C-b> <End>
@@ -69,14 +69,18 @@ Plug 'mhartington/oceanic-next'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 call plug#end()
 
-" Plugin configurations
+" Make nerdtree open automatically when calling `vim` on a folder
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
 let g:polyglot_disabled = ['elm']
 let g:elm_detailed_complete = 1
 let g:elm_format_autosave = 1
+let g:elm_setup_keybindings = 0
+
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
+
 let g:ale_sign_column_always = 1
 let g:ale_lint_on_text_changed = 'never'
 
