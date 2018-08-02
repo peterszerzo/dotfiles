@@ -12,7 +12,7 @@ alias tmux="tmux -2"
 git config --global push.default current
 
 # Enable https://github.com/rupa/z
-. ~/dotfiles/z.sh
+. ~/dotfiles/z/z.sh
 
 ZSH_THEME="spaceship"
 
