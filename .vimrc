@@ -78,6 +78,8 @@ let g:elm_detailed_complete = 1
 let g:elm_format_autosave = 1
 let g:elm_setup_keybindings = 0
 
+let g:tsuquyomi_disable_quickfix = 1
+
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
 
