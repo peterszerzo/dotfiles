@@ -1,4 +1,3 @@
-" Settings
 set autoread
 set autoindent
 set backspace=2
@@ -8,6 +7,7 @@ set hlsearch
 set incsearch
 set nocompatible
 set noswapfile
+set clipboard=unnamed
 set nowrap
 set encoding=utf-8
 set number
@@ -22,14 +22,15 @@ filetype plugin indent on
 syntax enable
 
 " Keybindings
-noremap <Leader>p :!node_modules\/.bin\/prettier % --no-semi --write<CR>
+noremap <Leader>p :!prettier % --write<CR>
 noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
 noremap <Leader>h :noh<CR>
 noremap <Leader>x :q!<CR>
 noremap <Leader>o :Gbrowse!<CR>
-" Feed word under the cursor into CtrlP and move to file.
-map <Leader>g <C-P><C-\>w<CR>
+noremap <Leader>n :ALENext<CR>
+noremap <Leader>m :ALEPrevious<CR>
+noremap <Leader>, :ALEDetail<CR>
 :imap jk <Esc>
 noremap / /\v
 noremap Y y$
@@ -51,22 +52,32 @@ noremap <Leader>b :b#<CR>
 cnoremap <C-a> <Home>
 cnoremap <C-b> <End>
 
+" coc.nvim settings
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+
 " Plugins
 call plug#begin('~/.vim/plugged')
-Plug 'elmcast/elm-vim'
+Plug 'andys8/vim-elm-syntax'
 Plug 'sheerun/vim-polyglot'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
+Plug 'posva/vim-vue'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
+Plug 'udalov/kotlin-vim'
+Plug 'tikhomirov/vim-glsl'
 Plug 'w0rp/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Shougo/deoplete.nvim'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'vim-airline/vim-airline'
 Plug 'Quramy/tsuquyomi'
-Plug 'mhartington/oceanic-next'
-Plug 'sonph/onehalf', {'rtp': 'vim/'}
+Plug 'arcticicestudio/nord-vim'
 call plug#end()
 
 " Make nerdtree open automatically when calling `vim` on a folder
@@ -74,9 +85,6 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
 let g:polyglot_disabled = ['elm']
-let g:elm_detailed_complete = 1
-let g:elm_format_autosave = 1
-let g:elm_setup_keybindings = 0
 
 let g:tsuquyomi_disable_quickfix = 1
 
@@ -84,12 +92,23 @@ let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
 
 let g:ale_sign_column_always = 1
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_set_highlights = 0
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\   'css': ['prettier'],
+\}
+let g:ale_fixers = {
+\   'javascript': ['prettier'],
+\   'haskell': ['stylish-haskell'],
+\   'vue': ['prettier'],
+\   'typescript': ['prettier'],
+\   'css': ['prettier'],
+\   'elm': ['elm-format'],
+\}
+let g:ale_fix_on_save = 1
 
 let g:airline#extensions#ale#enabled = 1
-let g:airline_theme='oceanicnext'
+let g:airline_theme='nord'
 
 set t_Co=256
 set background=dark
-colorscheme OceanicNext
+colorscheme nord
