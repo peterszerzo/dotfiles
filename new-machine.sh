@@ -13,10 +13,10 @@ brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # Desktop apps
-brew cask install alfred dash vlc 1password
+brew cask install dash vlc 1password brave-browser
 
 # Vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-npm i -g elm spaceship
+npm i -g elm spaceship serve
