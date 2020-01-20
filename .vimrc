@@ -31,6 +31,7 @@ noremap <Leader>o :Gbrowse!<CR>
 noremap <Leader>n :ALENext<CR>
 noremap <Leader>m :ALEPrevious<CR>
 noremap <Leader>, :ALEDetail<CR>
+noremap <Leader>. :Gvsplit master:%<CR>
 :imap jk <Esc>
 noremap / /\v
 noremap Y y$
