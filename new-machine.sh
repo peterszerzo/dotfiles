@@ -3,7 +3,7 @@ defaults write com.apple.finder AppleShowAllFiles -bool true
 
 # Install homebrew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap caskroom/cask
+brew tap homebrew/cask
 brew install brew-cask
 brew tap caskroom/versions
 
