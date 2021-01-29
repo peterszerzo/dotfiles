@@ -18,7 +18,7 @@ set softtabstop=2
 set showcmd
 set wildmenu
 set wildmode=longest:full,full
-set wildignore=*/node_modules/*,*/elm-stuff/*,*/lib/*,*/public/*
+set wildignore+=*/node_modules/*,*/elm-stuff/*,*/public/*
 filetype plugin indent on
 syntax enable
 
@@ -37,7 +37,9 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
-nmap <silent> gd <Plug>(coc-definition)
+" Async equivalent of 'nmap <silent> gd <Plug>(coc-definition)'
+nmap <silent> gd :<C-u>call CocActionAsync('jumpDefinition')<CR>
+nmap <silent> gh :<C-u>call CocActionAsync('doHover')<CR>
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
@@ -64,17 +66,18 @@ cnoremap <C-b> <End>
 
 " Plugins
 call plug#begin('~/.vim/plugged')
-Plug 'sheerun/vim-polyglot'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
 Plug 'tikhomirov/vim-glsl'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tidalcycles/vim-tidal'
 Plug 'vim-airline/vim-airline'
 Plug 'arcticicestudio/nord-vim'
+Plug 'leafOfTree/vim-svelte-plugin'
 call plug#end()
 
 " Make nerdtree open automatically when calling `vim` on a folder
@@ -83,6 +86,9 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
+let g:ctrlp_custom_ignore = 'node_modules\|elm-stuff\|DS_Store\|git'
+
+let g:vim_svelte_plugin_use_typescript = 1
 
 let g:airline_theme='nord'
 
