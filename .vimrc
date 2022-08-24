@@ -24,6 +24,7 @@ syntax enable
 
 " Keybindings
 noremap <Leader>p :!prettier % --write<CR>
+noremap <Leader>f :!elm-format % --yes<CR>
 noremap <Leader>e :!open -e %<CR>
 noremap <Leader>s :update<CR>
 noremap <Leader>h :noh<CR>
@@ -84,13 +85,19 @@ call plug#end()
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
+autocmd! BufNewFile,BufRead *.jxs,*.vs,*.fs set ft=glsl
+
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP :pwd'
 let g:ctrlp_custom_ignore = 'node_modules\|elm-stuff\|DS_Store\|git'
 
+let g:coc_global_extensions = ['coc-tailwindcss', 'coc-prettier', 'coc-vetur', 'coc-tsserver', 'coc-svelte', 'coc-json']
+
 let g:vim_svelte_plugin_use_typescript = 1
 
 let g:airline_theme='nord'
+
+let maplocalleader=","
 
 set t_Co=256
 set background=dark
