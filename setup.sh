@@ -12,4 +12,5 @@ chmod +x z/z.sh
 cd ~
 ln -sv ~/dotfiles/.zshrc ~
 ln -sv ~/dotfiles/.vimrc ~
+ln -sv ~/dotfiles/init.vim ~
 ln -sv ~/dotfiles/.tmux.conf ~
