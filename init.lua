@@ -36,7 +36,6 @@ vim.api.nvim_set_keymap("n", "<Leader>x", ":q!<CR>", {});
 vim.api.nvim_set_keymap("n", "<Leader>s", ":w<CR>", {});
 vim.api.nvim_set_keymap("n", "<Leader>h", ":noh<CR>", {});
 vim.api.nvim_set_keymap("n", "<Leader>r", ":LspRestart<CR>", {});
-vim.api.nvim_set_keymap("n", "<Leader>f", ":!elm-format % --yes<CR>", {});
 vim.api.nvim_set_keymap("n", "[z", "zM", {});
 vim.api.nvim_set_keymap("n", "]z", "zR", {});
 
@@ -81,9 +80,24 @@ require("lazy").setup({
       {"L3MON4D3/LuaSnip"},     -- Required
     }
   },
+  "saadparwaiz1/cmp_luasnip",
   {
     "nvim-telescope/telescope.nvim", tag = "0.1.2",
      dependencies = { "nvim-lua/plenary.nvim" }
+  },
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      search = {
+        command = "grep",
+      }
+    }
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {},
   },
   {
     "zbirenbaum/copilot.lua",
@@ -104,13 +118,14 @@ require("lazy").setup({
   }
 })
 
+require("luasnip.loaders.from_snipmate").lazy_load()
+
 -- LSP zero
 
 local lsp = require("lsp-zero").preset({})
 
 lsp.on_attach(function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
+  -- see :help lsp-zero-keybindings to learn the available actions
   lsp.default_keymaps({buffer = bufnr})
 end)
 
@@ -119,7 +134,7 @@ lsp.ensure_installed({
 })
 
 
--- (Optional) Configure lua language server for neovim
+-- Configure lua language server for neovim
 require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
 
 -- LSP zero Elm
@@ -146,6 +161,7 @@ lsp.format_on_save({
   },
   servers = {
     ["my_elm"] = {"elm"},
+    ["tsserver"] = {"ts", "tsx"},
   }
 })
 
@@ -159,7 +175,7 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
   ["<CR>"] = cmp.mapping.confirm({ select = false })
 })
 
-lsp.setup_nvim_cmp({ 
+lsp.setup_nvim_cmp({
   mapping = cmp_mappings,
   sources = {
     { name = "copilot", group_index = 2 },
@@ -178,14 +194,14 @@ require("lazy").setup({
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    config = function () 
+    config = function ()
       local configs = require("nvim-treesitter.configs")
 
       configs.setup({
           ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html", "elm" },
           sync_install = false,
           highlight = { enable = true, additional_vim_regex_highlighting = false },
-          indent = { enable = true },  
+          indent = { enable = true },
         })
     end
   }
@@ -195,12 +211,35 @@ require("lazy").setup({
 
 vim.cmd("colorscheme tokyonight-night")
 
-builtin = require("telescope.builtin")
+local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", "<Leader>pf", builtin.find_files, {})
+vim.keymap.set("n", "<Leader>ff", builtin.find_files, {})
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set("n", "<Leader>ps", function()
-  builtin.grep_string({ search = vim.fn.input("Grep > ") })
+vim.keymap.set('n', '<Leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<Leader>ft', builtin.help_tags, {})
+
+vim.api.nvim_create_user_command(
+  'Grp',
+  function(opts)
+    vim.cmd(string.format("Git grep -q \"%s\"", opts.fargs[1]));
+  end,
+  { nargs = 1 }
+)
+
+vim.keymap.set("n", "<Leader>trx", function() require("trouble").open() end)
+vim.keymap.set("n", "<Leader>trw", function() require("trouble").open("workspace_diagnostics") end)
+vim.keymap.set("n", "<Leader>trd", function() require("trouble").open("document_diagnostics") end)
+vim.keymap.set("n", "<Leader>trq", function() require("trouble").open("quickfix") end)
+vim.keymap.set("n", "<Leader>trl", function() require("trouble").open("loclist") end)
+
+vim.keymap.set("n", "<Leader>c", function()
+  vim.cmd("e ~/.config/nvim/init.lua")
 end)
-vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
+
+vim.keymap.set("n", "<Leader>p", function()
+  if (vim.bo.filetype == "elm") then
+    vim.cmd("!elm-format % --yes")
+  elseif (vim.bo.filetype == "typescript" or vim.bo.filetype == "typescriptreact") then
+    vim.cmd("!prettier % --write")
+  end
+end)
