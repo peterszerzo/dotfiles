@@ -8,11 +8,10 @@ brew install brew-cask
 brew tap caskroom/versions
 
 # Brew install basics
-brew install z tmux zsh zsh-completions lua-language-server
+brew install z tmux lua-language-server
 brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # Desktop apps
 brew cask install dash vlc 1password
 
-npm i -g elm spaceship serve
+npm i -g elm serve

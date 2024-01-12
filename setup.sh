@@ -1,16 +1,13 @@
 cd ~
 
 # Cleanup
-rm -rf dotfiles .zshrc .vimrc .tmux.conf
+rm -rf dotfiles .config/nvim/init.lua .config/fish/config.fish .config/tmux/tmux.conf
 
 git clone git@github.com:peterszerzo/dotfiles.git
 cd dotfiles
-git clone git@github.com:rupa/z.git
-chmod +x z/z.sh
 
 # Set up symlinks
 cd ~
-ln -sv ~/dotfiles/.zshrc ~
-ln -sv ~/dotfiles/.vimrc ~
-ln -sv ~/dotfiles/init.vim ~/.config/nvim
-ln -sv ~/dotfiles/.tmux.conf ~
+ln -sv ~/dotfiles/init.lua ~/.config/nvim
+ln -sv ~/dotfiles/config.fish ~/.config/fish
+ln -sv ~/dotfiles/tmux/tmux.conf ~/.config/tmux
