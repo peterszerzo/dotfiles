@@ -70,6 +70,23 @@ require("lazy").setup({
 	"tidalcycles/vim-tidal",
 	"tommcdo/vim-exchange",
 	{
+		"lewis6991/gitsigns.nvim",
+		config = function()
+			require("gitsigns").setup()
+			vim.keymap.set("n", "<leader>ip", ":Gitsigns preview_hunk<CR>")
+			vim.keymap.set("n", "<leader>it", ":Gitsigns toggle_current_line_blame<CR>")
+		end,
+	},
+	{
+		"kdheepak/lazygit.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		keys = {
+			{ "<Leader>ii", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+		},
+	},
+	{
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
@@ -103,18 +120,9 @@ require("lazy").setup({
 			"L3MON4D3/LuaSnip",
 			"saadparwaiz1/cmp_luasnip",
 			"rafamadriz/friendly-snippets",
-			"zbirenbaum/copilot.lua",
-			"zbirenbaum/copilot-cmp",
 		},
 		config = function()
 			local cmp = require("cmp")
-
-			require("copilot").setup({
-				suggestion = { enabled = false },
-				panel = { enabled = false },
-			})
-
-			require("copilot_cmp").setup({})
 
 			cmp.setup({
 				completion = {
@@ -134,7 +142,6 @@ require("lazy").setup({
 				},
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
-					{ name = "copilot" },
 					{ name = "luasnip" },
 					{ name = "buffer" },
 					{ name = "path" },
@@ -142,13 +149,15 @@ require("lazy").setup({
 			})
 		end,
 	},
+	-- {
+	-- 	"github/copilot.vim",
+	-- },
 	{
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v3.x",
 	},
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.5",
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	{
@@ -182,16 +191,17 @@ require("lazy").setup({
 		},
 	},
 	{
-		"wthollingsworth/pomodoro.nvim",
-		dependencies = { "MunifTanjim/nui.nvim" },
-		config = function()
-			require("pomodoro").setup({
-				time_work = 25,
-				time_break_short = 5,
-				time_break_long = 20,
-				timers_to_long_break = 4,
-			})
-		end,
+		"epwalsh/pomo.nvim",
+		version = "*", -- Recommended, use latest release instead of latest commit
+		lazy = true,
+		cmd = { "TimerStart", "TimerRepeat" },
+		dependencies = {
+			-- Optional, but highly recommended if you want to use the "Default" timer
+			"rcarriga/nvim-notify",
+		},
+		opts = {
+			-- See below for full list of options 👇
+		},
 	},
 	{
 		"nvim-lualine/lualine.nvim",
@@ -203,7 +213,7 @@ require("lazy").setup({
 					component_separators = { left = "|", right = "|" },
 				},
 				sections = {
-					lualine_c = { "filename", require("pomodoro").statusline },
+					lualine_c = { "filename" },
 				},
 			})
 		end,
@@ -226,59 +236,68 @@ require("lazy").setup({
 					typescriptreact = { "prettier" },
 					css = { "prettier" },
 				},
-				format_on_save = {
-					timeout_ms = 2500,
+				format_after_save = {
 					lsp_fallback = true,
 				},
 			})
 		end,
 	},
 	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
+		"pwntester/octo.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "nvim-tree/nvim-web-devicons" },
 		config = function()
-			local configs = require("nvim-treesitter.configs")
-
-			configs.setup({
-				ensure_installed = {
-					"c",
-					"lua",
-					"vim",
-					"vimdoc",
-					"query",
-					"elixir",
-					"heex",
-					"javascript",
-					"html",
-					"elm",
-					"typescript",
-					"tsx",
-				},
-				auto_install = true,
-				sync_install = false,
-				highlight = { enable = true, additional_vim_regex_highlighting = false },
-				indent = { enable = true },
-				textobjects = {
-					selects = {
-						enable = true,
-						lookahead = true,
-						keymaps = {
-							-- You can use the capture groups defined in textobjects.scm
-							["af"] = "@function.outer",
-							["if"] = "@function.inner",
-						},
-					},
-				},
-			})
+			require("octo").setup()
 		end,
 	},
 	{
-		"nvim-treesitter/nvim-treesitter-textobjects",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
 	},
 })
 
 require("luasnip.loaders.from_snipmate").lazy_load()
+
+-- Fix 'prev_line' runtime error with copilot per https://github.com/ayamir/nvimdots/issues/365#issuecomment-1353351666
+-- vim.cmd([[
+--   let g:copilot_filetypes = {
+--      \ 'dap-repl': v:false,
+--      \ }
+-- ]])
+
+-- Treesitter
+
+require("nvim-treesitter.configs").setup({
+	ensure_installed = {
+		"c",
+		"lua",
+		"vim",
+		"vimdoc",
+		"query",
+		"elixir",
+		"heex",
+		"javascript",
+		"html",
+		"elm",
+		"typescript",
+		"tsx",
+	},
+	auto_install = true,
+	sync_install = false,
+	highlight = { enable = true, additional_vim_regex_highlighting = false },
+	indent = { enable = true },
+	textobjects = {
+		selects = {
+			enable = true,
+			lookahead = true,
+			keymaps = {
+				-- You can use the capture groups defined in textobjects.scm
+				["af"] = "@function.outer",
+				["if"] = "@function.inner",
+			},
+		},
+	},
+})
 
 -- LSP zero
 
@@ -313,9 +332,15 @@ local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<Leader>ff", builtin.find_files, {})
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
 vim.keymap.set("n", "<Leader>fg", builtin.live_grep, {})
+vim.keymap.set("n", "<Leader>fs", builtin.grep_string, {})
 vim.keymap.set("n", "<Leader>fc", builtin.git_commits, {})
 vim.keymap.set("n", "<Leader>fbc", builtin.git_bcommits, {})
 vim.keymap.set("n", "<Leader>ft", builtin.help_tags, {})
+vim.keymap.set("n", "<Leader>fr", builtin.treesitter, {})
+vim.keymap.set("n", "<Leader>fpr", ":Octo pr list<CR>")
+vim.keymap.set("n", "<Leader>fi", ":Octo issue list<CR>")
+vim.keymap.set("n", "<Leader>fnpr", ":Octo pr create<CR>")
+vim.keymap.set("n", "<Leader>fni", ":Octo issue create<CR>")
 
 vim.api.nvim_create_user_command("Grp", function(opts)
 	vim.cmd(string.format('Git grep -q "%s"', opts.fargs[1]))
@@ -345,7 +370,11 @@ vim.keymap.set("n", "<Leader>tp", function()
 	trouble.previous({ skip_groups = true, jump = true })
 end)
 
-vim.keymap.set({ "n" }, "<Leader>ds", ":PomodoroStart<CR>")
+vim.keymap.set({ "n" }, "<Leader>ds", ":TimerStart 25m Work<CR>")
+vim.keymap.set({ "n" }, "<Leader>dh", ":TimerHide<CR>")
+vim.keymap.set({ "n" }, "<Leader>dw", ":TimerShow<CR>")
+
+-- Git shortcuts
 vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse<CR>")
 vim.keymap.set({ "n", "v", "l" }, "<Leader>id", ":Gdiff<CR>")
 vim.keymap.set({ "n" }, "<Leader>b", "<C-^>")
