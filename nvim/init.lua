@@ -9,10 +9,9 @@ vim.opt.wrap = false
 vim.opt.inccommand = "split"
 vim.opt.swapfile = false
 vim.opt.relativenumber = true
--- vim.opt.foldmethod = "expr"
-vim.opt.foldmethod = "indent"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true
 vim.opt.termguicolors = true
 vim.opt.colorcolumn = "100"
 vim.opt.autoindent = true
@@ -36,12 +35,10 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 vim.api.nvim_set_keymap("i", "jk", "<Esc>", {})
-vim.api.nvim_set_keymap("n", "<Leader>x", ":q!<CR>", {})
+vim.api.nvim_set_keymap("n", "<Leader>q", ":q!<CR>", {})
 vim.api.nvim_set_keymap("n", "<Leader>s", ":w<CR>", {})
 vim.api.nvim_set_keymap("n", "<Leader>h", ":noh<CR>", {})
 vim.api.nvim_set_keymap("n", "<Leader>r", ":LspRestart<CR>", {})
-vim.api.nvim_set_keymap("n", "[z", "zM", {})
-vim.api.nvim_set_keymap("n", "]z", "zR", {})
 
 -- Package manager
 
@@ -70,11 +67,74 @@ require("lazy").setup({
 	"tidalcycles/vim-tidal",
 	"tommcdo/vim-exchange",
 	{
+		"kevinhwang91/nvim-ufo",
+		dependencies = { "kevinhwang91/promise-async" },
+		config = function()
+			local ufo = require("ufo")
+			ufo.setup({
+				provider_selector = function(bufnr, filetype, buftype)
+					return { "treesitter", "indent" }
+				end,
+			})
+			vim.keymap.set("n", "[z", ufo.closeAllFolds)
+			vim.keymap.set("n", "]z", ufo.openAllFolds)
+		end,
+	},
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		init = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 600
+		end,
+		opts = {},
+	},
+	{
+
 		"lewis6991/gitsigns.nvim",
 		config = function()
-			require("gitsigns").setup()
-			vim.keymap.set("n", "<leader>ip", ":Gitsigns preview_hunk<CR>")
-			vim.keymap.set("n", "<leader>it", ":Gitsigns toggle_current_line_blame<CR>")
+			require("gitsigns").setup({
+				on_attach = function(bufnr)
+					local gitsigns = require("gitsigns")
+					local function map(mode, l, r, opts)
+						opts = opts or {}
+						opts.buffer = bufnr
+						vim.keymap.set(mode, l, r, opts)
+					end
+
+					vim.keymap.set("n", "<leader>ip", ":Gitsigns preview_hunk<CR>")
+					vim.keymap.set("n", "<leader>it", ":Gitsigns toggle_current_line_blame<CR>")
+
+					-- Navigation
+					map("n", "]c", function()
+						if vim.wo.diff then
+							vim.cmd.normal({ "]c", bang = true })
+						else
+							gitsigns.nav_hunk("next")
+						end
+					end)
+
+					map("n", "[c", function()
+						if vim.wo.diff then
+							vim.cmd.normal({ "[c", bang = true })
+						else
+							gitsigns.nav_hunk("prev")
+						end
+					end)
+				end,
+			})
+		end,
+	},
+	{
+		"mikesmithgh/kitty-scrollback.nvim",
+		enabled = true,
+		lazy = true,
+		cmd = { "KittyScrollbackGenerateKittens", "KittyScrollbackCheckHealth" },
+		event = { "User KittyScrollbackLaunch" },
+		-- version = '*', -- latest stable version, may have breaking changes if major version changed
+		-- version = '^4.0.0', -- pin major version, include fixes and features that do not have breaking changes
+		config = function()
+			require("kitty-scrollback").setup()
 		end,
 	},
 	{
@@ -96,9 +156,10 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"catppuccin/nvim",
-		name = "catppuccin",
+		"folke/tokyonight.nvim",
+		lazy = false,
 		priority = 1000,
+		opts = {},
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
@@ -110,6 +171,14 @@ require("lazy").setup({
 	{ "neovim/nvim-lspconfig" },
 	{ "williamboman/mason.nvim" },
 	{ "williamboman/mason-lspconfig.nvim" },
+	{
+		"m4xshen/hardtime.nvim",
+		dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+		opts = {},
+		config = function()
+			require("hardtime").setup()
+		end,
+	},
 	{
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
@@ -149,9 +218,6 @@ require("lazy").setup({
 			})
 		end,
 	},
-	-- {
-	-- 	"github/copilot.vim",
-	-- },
 	{
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v3.x",
@@ -159,27 +225,6 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
-	},
-	{
-		"karb94/neoscroll.nvim",
-		config = function()
-			require("neoscroll").setup({
-				-- Set any options as needed
-			})
-
-			local t = {}
-			t["<C-u>"] = { "scroll", { "-vim.wo.scroll", "true", "100" } }
-			t["<C-d>"] = { "scroll", { "vim.wo.scroll", "true", "100" } }
-			t["<C-b>"] = { "scroll", { "-vim.api.nvim_win_get_height(0)", "true", "200" } }
-			t["<C-f>"] = { "scroll", { "vim.api.nvim_win_get_height(0)", "true", "200" } }
-			t["<C-y>"] = { "scroll", { "-0.10", "false", "50" } }
-			t["<C-e>"] = { "scroll", { "0.10", "false", "50" } }
-			t["zt"] = { "zt", { "125" } }
-			t["zz"] = { "zz", { "125" } }
-			t["zb"] = { "zb", { "125" } }
-
-			require("neoscroll.config").set_mappings(t)
-		end,
 	},
 	{
 		"folke/todo-comments.nvim",
@@ -211,6 +256,7 @@ require("lazy").setup({
 				options = {
 					section_separators = { left = "", right = "" },
 					component_separators = { left = "|", right = "|" },
+					theme = "tokyonight",
 				},
 				sections = {
 					lualine_c = { "filename" },
@@ -257,13 +303,6 @@ require("lazy").setup({
 })
 
 require("luasnip.loaders.from_snipmate").lazy_load()
-
--- Fix 'prev_line' runtime error with copilot per https://github.com/ayamir/nvimdots/issues/365#issuecomment-1353351666
--- vim.cmd([[
---   let g:copilot_filetypes = {
---      \ 'dap-repl': v:false,
---      \ }
--- ]])
 
 -- Treesitter
 
@@ -325,22 +364,29 @@ lsp.setup()
 
 -- Other stuff
 
-vim.cmd("colorscheme catppuccin-mocha")
+vim.cmd("colorscheme tokyonight-night")
 
 local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", "<Leader>ff", builtin.find_files, {})
+vim.keymap.set("n", "<Leader>ff", builtin.find_files, { desc = "Search files" })
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
-vim.keymap.set("n", "<Leader>fg", builtin.live_grep, {})
-vim.keymap.set("n", "<Leader>fs", builtin.grep_string, {})
-vim.keymap.set("n", "<Leader>fc", builtin.git_commits, {})
-vim.keymap.set("n", "<Leader>fbc", builtin.git_bcommits, {})
-vim.keymap.set("n", "<Leader>ft", builtin.help_tags, {})
-vim.keymap.set("n", "<Leader>fr", builtin.treesitter, {})
-vim.keymap.set("n", "<Leader>fpr", ":Octo pr list<CR>")
+vim.keymap.set("n", "<Leader>fg", builtin.live_grep, { desc = "Live grep" })
+vim.keymap.set("n", "<Leader>fs", builtin.grep_string, { desc = "Search under cursor" })
+vim.keymap.set("n", "<Leader>fc", builtin.git_commits, { desc = "Search commits" })
+vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Search help tags" })
+vim.keymap.set("n", "<Leader>fr", builtin.registers, { desc = "Search registers" })
+vim.keymap.set("n", "<Leader>fm", builtin.marks, { desc = "Search marks" })
+vim.keymap.set("n", "<Leader>ft", builtin.treesitter, { desc = "Search treesitter" })
+vim.keymap.set("n", "<Leader>fn", builtin.man_pages, { desc = "Search man pages" })
+vim.keymap.set("n", "<Leader>fp", ":Octo pr list<CR>")
 vim.keymap.set("n", "<Leader>fi", ":Octo issue list<CR>")
-vim.keymap.set("n", "<Leader>fnpr", ":Octo pr create<CR>")
-vim.keymap.set("n", "<Leader>fni", ":Octo issue create<CR>")
+
+-- Octo PRs
+vim.keymap.set("n", "<Leader>oic", ":Octo issue create<CR>")
+vim.keymap.set("n", "<Leader>opc", ":Octo pr create<CR>")
+vim.keymap.set("n", "<Leader>opm", ":Octo pr merge<CR>")
+vim.keymap.set("n", "<Leader>ors", ":Octo review start<CR>")
+vim.keymap.set("n", "<Leader>oru", ":Octo review submit<CR>")
 
 vim.api.nvim_create_user_command("Grp", function(opts)
 	vim.cmd(string.format('Git grep -q "%s"', opts.fargs[1]))
@@ -348,26 +394,23 @@ end, { nargs = 1 })
 
 local trouble = require("trouble")
 
-vim.keymap.set("n", "<Leader>to", function()
-	trouble.open()
-end)
-vim.keymap.set("n", "<Leader>tw", function()
-	trouble.open("workspace_diagnostics")
-end)
-vim.keymap.set("n", "<Leader>td", function()
-	trouble.open("document_diagnostics")
-end)
-vim.keymap.set("n", "<Leader>tq", function()
-	trouble.open("quickfix")
-end)
-vim.keymap.set("n", "<Leader>tl", function()
-	trouble.open("loclist")
-end)
-vim.keymap.set("n", "<Leader>tn", function()
-	trouble.next({ skip_groups = true, jump = true })
-end)
-vim.keymap.set("n", "<Leader>tp", function()
-	trouble.previous({ skip_groups = true, jump = true })
+vim.keymap.set("n", "<Leader>xx", function()
+	trouble.toggle()
+end, { desc = "Trouble" })
+vim.keymap.set("n", "<Leader>xw", function()
+	trouble.toggle("workspace_diagnostics")
+end, { desc = "Trouble workspace" })
+vim.keymap.set("n", "<Leader>xd", function()
+	trouble.toggle("document_diagnostics")
+end, { desc = "Trouble document" })
+vim.keymap.set("n", "<Leader>xq", function()
+	trouble.toggle("quickfix")
+end, { desc = "Trouble quickfix" })
+vim.keymap.set("n", "<Leader>xl", function()
+	trouble.toggle("loclist")
+end, { desc = "Trouble location list" })
+vim.keymap.set("n", "gR", function()
+	trouble.toggle("lsp_references")
 end)
 
 vim.keymap.set({ "n" }, "<Leader>ds", ":TimerStart 25m Work<CR>")
@@ -375,11 +418,17 @@ vim.keymap.set({ "n" }, "<Leader>dh", ":TimerHide<CR>")
 vim.keymap.set({ "n" }, "<Leader>dw", ":TimerShow<CR>")
 
 -- Git shortcuts
-vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse<CR>")
+vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse!<CR>")
 vim.keymap.set({ "n", "v", "l" }, "<Leader>id", ":Gdiff<CR>")
 vim.keymap.set({ "n" }, "<Leader>b", "<C-^>")
 
-vim.keymap.set({ "n" }, "<Leader>o", ":NvimTreeFindFile<CR>")
+vim.keymap.set({ "n" }, "<Leader>w", ":NvimTreeFindFile<CR>")
+
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "gd", vim.lsp.buf.definition)
+vim.keymap.set("n", "gr", vim.lsp.buf.references)
+vim.keymap.set("n", "K", vim.lsp.buf.hover)
 
 vim.keymap.set("n", "<Leader>c", function()
 	vim.cmd("e ~/.config/nvim/init.lua")
