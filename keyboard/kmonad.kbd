@@ -1,0 +1,37 @@
+(defcfg
+  input (iokit-name)
+  output (kext)
+  fallthrough true
+)
+
+(defalias
+    met_a (tap-hold-next-release 150 a lmet)
+    alt_s (tap-hold-next-release 150 s lalt)
+    sft_d (tap-hold-next-release 150 d lsft)
+    ctl_f (tap-hold-next-release 150 f lctl)
+
+    ctl_j (tap-hold-next-release 150 j rctl)
+    sft_k (tap-hold-next-release 150 k rsft)
+    alt_l (tap-hold-next-release 150 l lalt)
+    met_; (tap-hold-next-release 150 ; rmet)
+
+    tmux (around lctl a)
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  lctl a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft up
+  fn   caps lalt lmet           spc            rmet ralt left down rght
+)
+
+(deflayer base
+  esc  brdn brup lp   mctl bldn blup prev pp   next mute vold volu
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps @met_a    @alt_s    @sft_d    @ctl_f    g    h    @ctl_j    @sft_k    @alt_l    @met_;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft up
+  fn   @tmux lalt lmet           spc            rmet ralt left down rght
+)

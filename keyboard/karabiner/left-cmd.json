@@ -1,0 +1,38 @@
+{
+    "description": "a -> left cmd",
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "a",
+                "modifiers": {
+                    "optional": [
+                        "any"
+                    ]
+                }
+            },
+            "parameters": {
+                "basic.to_delayed_action_delay_milliseconds": 120,
+                "basic.to_if_held_down_threshold_milliseconds": 120
+            },
+            "to_delayed_action": {
+                "to_if_canceled": [
+                    {
+                        "key_code": "a"
+                    }
+                ]
+            },
+            "to_if_alone": [
+                {
+                    "halt": true,
+                    "key_code": "a"
+                }
+            ],
+            "to_if_held_down": [
+                {
+                    "key_code": "left_command"
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
