@@ -1,44 +1,4 @@
--- Base settings
-vim.opt.number = true
-vim.opt.incsearch = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.scrolloff = 4
-vim.opt.backspace = "indent,eol,start"
-vim.opt.wrap = false
-vim.opt.inccommand = "split"
-vim.opt.swapfile = false
-vim.opt.relativenumber = true
-vim.opt.foldlevel = 99
-vim.opt.foldlevelstart = 99
-vim.opt.foldenable = true
-vim.opt.termguicolors = true
-vim.opt.colorcolumn = "100"
-vim.opt.autoindent = true
-vim.opt.autoread = true
-vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
-vim.opt.smarttab = true
-vim.opt.clipboard = "unnamed"
-vim.opt.wildmenu = true
-vim.opt.wildignore = { "*/node_modules/*", "*/elm-stuff/*", "*/public/*" }
-vim.g.netrw_banner = 0
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-	group = vim.api.nvim_create_augroup("highlight_yank", {}),
-	desc = "Hightlight selection on yank",
-	pattern = "*",
-	callback = function()
-		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
-	end,
-})
-
-vim.api.nvim_set_keymap("i", "jk", "<Esc>", {})
-vim.api.nvim_set_keymap("n", "<Leader>q", ":q!<CR>", {})
-vim.api.nvim_set_keymap("n", "<Leader>s", ":w<CR>", {})
-vim.api.nvim_set_keymap("n", "<Leader>h", ":noh<CR>", {})
-vim.api.nvim_set_keymap("n", "<Leader>r", ":LspRestart<CR>", {})
+require("concerned.core")
 
 -- Package manager
 
@@ -59,7 +19,6 @@ require("lazy").setup({
 	"christoomey/vim-tmux-navigator",
 	"tpope/vim-surround",
 	"tpope/vim-repeat",
-	"tpope/vim-unimpaired",
 	"tpope/vim-abolish",
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
@@ -81,15 +40,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"folke/which-key.nvim",
-		event = "VeryLazy",
-		init = function()
-			vim.o.timeout = true
-			vim.o.timeoutlen = 600
-		end,
-		opts = {},
-	},
-	{
 
 		"lewis6991/gitsigns.nvim",
 		config = function()
@@ -106,17 +56,17 @@ require("lazy").setup({
 					vim.keymap.set("n", "<leader>it", ":Gitsigns toggle_current_line_blame<CR>")
 
 					-- Navigation
-					map("n", "]c", function()
+					map("n", "]m", function()
 						if vim.wo.diff then
-							vim.cmd.normal({ "]c", bang = true })
+							vim.cmd.normal({ "]m", bang = true })
 						else
 							gitsigns.nav_hunk("next")
 						end
 					end)
 
-					map("n", "[c", function()
+					map("n", "[m", function()
 						if vim.wo.diff then
-							vim.cmd.normal({ "[c", bang = true })
+							vim.cmd.normal({ "[m", bang = true })
 						else
 							gitsigns.nav_hunk("prev")
 						end
@@ -126,15 +76,9 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"mikesmithgh/kitty-scrollback.nvim",
-		enabled = true,
-		lazy = true,
-		cmd = { "KittyScrollbackGenerateKittens", "KittyScrollbackCheckHealth" },
-		event = { "User KittyScrollbackLaunch" },
-		-- version = '*', -- latest stable version, may have breaking changes if major version changed
-		-- version = '^4.0.0', -- pin major version, include fixes and features that do not have breaking changes
+		"echasnovski/mini.bracketed",
 		config = function()
-			require("kitty-scrollback").setup()
+			require("mini.bracketed").setup()
 		end,
 	},
 	{
@@ -176,7 +120,13 @@ require("lazy").setup({
 		dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
 		opts = {},
 		config = function()
-			require("hardtime").setup()
+			require("hardtime").setup({
+				restricted_keys = {
+					["+"] = {},
+					["-"] = {},
+					["<C-p>"] = {},
+				},
+			})
 		end,
 	},
 	{
@@ -236,19 +186,6 @@ require("lazy").setup({
 		},
 	},
 	{
-		"epwalsh/pomo.nvim",
-		version = "*", -- Recommended, use latest release instead of latest commit
-		lazy = true,
-		cmd = { "TimerStart", "TimerRepeat" },
-		dependencies = {
-			-- Optional, but highly recommended if you want to use the "Default" timer
-			"rcarriga/nvim-notify",
-		},
-		opts = {
-			-- See below for full list of options 👇
-		},
-	},
-	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
@@ -299,6 +236,25 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		config = function()
+			require("treesitter-context").setup({
+				enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+				max_lines = 2, -- How many lines the window should span. Values <= 0 mean no limit.
+				min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+				line_numbers = true,
+				multiline_threshold = 20, -- Maximum number of lines to show for a single context
+				trim_scope = "inner", -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+				mode = "cursor", -- Line used to calculate context. Choices: 'cursor', 'topline'
+				-- Separator between context and content. Should be a single character string, like '-'.
+				-- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+				separator = nil,
+				zindex = 20, -- The Z-index of the context window
+				on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+			})
+		end,
 	},
 })
 
@@ -388,10 +344,6 @@ vim.keymap.set("n", "<Leader>opm", ":Octo pr merge<CR>")
 vim.keymap.set("n", "<Leader>ors", ":Octo review start<CR>")
 vim.keymap.set("n", "<Leader>oru", ":Octo review submit<CR>")
 
-vim.api.nvim_create_user_command("Grp", function(opts)
-	vim.cmd(string.format('Git grep -q "%s"', opts.fargs[1]))
-end, { nargs = 1 })
-
 local trouble = require("trouble")
 
 vim.keymap.set("n", "<Leader>xx", function()
@@ -413,10 +365,6 @@ vim.keymap.set("n", "gR", function()
 	trouble.toggle("lsp_references")
 end)
 
-vim.keymap.set({ "n" }, "<Leader>ds", ":TimerStart 25m Work<CR>")
-vim.keymap.set({ "n" }, "<Leader>dh", ":TimerHide<CR>")
-vim.keymap.set({ "n" }, "<Leader>dw", ":TimerShow<CR>")
-
 -- Git shortcuts
 vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse!<CR>")
 vim.keymap.set({ "n", "v", "l" }, "<Leader>id", ":Gdiff<CR>")
@@ -424,8 +372,6 @@ vim.keymap.set({ "n" }, "<Leader>b", "<C-^>")
 
 vim.keymap.set({ "n" }, "<Leader>w", ":NvimTreeFindFile<CR>")
 
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 vim.keymap.set("n", "gr", vim.lsp.buf.references)
 vim.keymap.set("n", "K", vim.lsp.buf.hover)
