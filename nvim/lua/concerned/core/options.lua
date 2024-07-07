@@ -24,6 +24,7 @@ opt.softtabstop = 2
 opt.swapfile = false
 opt.termguicolors = true
 opt.wrap = false
+opt.signcolumn = "yes:1"
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", {}),
