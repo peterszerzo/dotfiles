@@ -5,9 +5,7 @@ return {
 	"tpope/vim-abolish",
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
-	"tpope/vim-commentary",
 	"tidalcycles/vim-tidal",
-	"tommcdo/vim-exchange",
 	"BurntSushi/ripgrep",
 	{
 		"kevinhwang91/nvim-ufo",
@@ -42,19 +40,6 @@ return {
 				window = { suffix = "", options = {} },
 				yank = { suffix = "y", options = {} },
 			})
-		end,
-	},
-	{
-		"echasnovski/mini.surround",
-		config = function()
-			require("mini.surround").setup()
-		end,
-	},
-	{
-		"echasnovski/mini.pairs",
-		version = "*",
-		config = function()
-			require("mini.pairs").setup()
 		end,
 	},
 	{

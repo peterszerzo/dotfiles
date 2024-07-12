@@ -6,9 +6,8 @@ nvim_set_keymap("i", "JK", "<Esc>", {})
 nvim_set_keymap("n", "<Leader>q", ":q!<CR>", {})
 nvim_set_keymap("n", "<Leader>s", ":w<CR>", {})
 nvim_set_keymap("n", "<Leader>nh", ":nohl<CR>", {})
-nvim_set_keymap("n", "<Leader>r", ":LspRestart<CR>", {})
-nvim_set_keymap("n", "+", "<C-a>", {})
-nvim_set_keymap("n", "-", "<C-x>", {})
+nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
+nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
 -- Git shortcuts
 vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse!<CR>")
