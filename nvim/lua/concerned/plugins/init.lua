@@ -63,7 +63,8 @@ return {
 		config = function()
 			require("nvim-tree").setup()
 
-			vim.keymap.set({ "n" }, "<Leader>w", ":NvimTreeFindFile<CR>")
+			vim.keymap.set({ "n" }, "<Leader>tf", ":NvimTreeFindFile<CR>")
+			vim.keymap.set({ "n" }, "<Leader>tt", ":NvimTreeToggle<CR>")
 		end,
 	},
 	{

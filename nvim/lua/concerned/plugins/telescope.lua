@@ -11,6 +11,7 @@ return {
 		vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Search help tags" })
 		vim.keymap.set("n", "<Leader>fr", builtin.registers, { desc = "Search registers" })
 		vim.keymap.set("n", "<Leader>fm", builtin.marks, { desc = "Search marks" })
+		vim.keymap.set("n", "<Leader>fd", builtin.commands, { desc = "Search commands" })
 		vim.keymap.set("n", "<Leader>ft", builtin.treesitter, { desc = "Search treesitter" })
 		vim.keymap.set("n", "<Leader>fn", builtin.man_pages, { desc = "Search man pages" })
 	end,
