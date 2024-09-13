@@ -56,18 +56,6 @@ return {
 		},
 	},
 	{
-		"nvim-tree/nvim-tree.lua",
-		dependencies = {
-			"nvim-tree/nvim-web-devicons",
-		},
-		config = function()
-			require("nvim-tree").setup()
-
-			vim.keymap.set({ "n" }, "<Leader>tf", ":NvimTreeFindFile<CR>")
-			vim.keymap.set({ "n" }, "<Leader>tt", ":NvimTreeToggle<CR>")
-		end,
-	},
-	{
 		"folke/tokyonight.nvim",
 		lazy = false,
 		priority = 1000,
