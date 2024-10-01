@@ -6,9 +6,6 @@ return {
 
 		substitute.setup()
 
-		-- set keymaps
-		local keymap = vim.keymap -- for conciseness
-
 		vim.keymap.set("n", "sx", require("substitute.exchange").operator, { noremap = true })
 		vim.keymap.set("n", "sxx", require("substitute.exchange").line, { noremap = true })
 		vim.keymap.set("x", "X", require("substitute.exchange").visual, { noremap = true })

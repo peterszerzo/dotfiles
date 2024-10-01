@@ -5,7 +5,7 @@ opt.autoindent = true
 opt.autoread = true
 opt.backspace = "indent,eol,start"
 opt.clipboard = "unnamed"
-opt.colorcolumn = "100"
+opt.colorcolumn = "120"
 opt.cursorline = true
 opt.expandtab = true
 opt.foldenable = true
@@ -33,4 +33,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
 	end,
+})
+
+local function open_package_json()
+	local current_dir = vim.fn.getcwd()
+	local package_json_path = current_dir .. "/package.json"
+	local readme_path = current_dir .. "/README.md"
+
+	if vim.fn.filereadable(package_json_path) == 1 then
+		vim.cmd("edit " .. package_json_path)
+	elseif vim.fn.filereadable(readme_path) == 1 then
+		vim.cmd("edit " .. readme_path)
+	end
+end
+
+-- Autocommand to run the function when Neovim starts
+vim.api.nvim_create_autocmd("VimEnter", {
+	callback = open_package_json,
+	nested = true,
 })

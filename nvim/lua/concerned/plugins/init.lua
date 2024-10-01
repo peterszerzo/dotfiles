@@ -8,41 +8,6 @@ return {
 	"tidalcycles/vim-tidal",
 	"BurntSushi/ripgrep",
 	{
-		"kevinhwang91/nvim-ufo",
-		dependencies = { "kevinhwang91/promise-async" },
-		config = function()
-			local ufo = require("ufo")
-			ufo.setup({
-				provider_selector = function(bufnr, filetype, buftype)
-					return { "treesitter", "indent" }
-				end,
-			})
-			vim.keymap.set("n", "[z", ufo.closeAllFolds)
-			vim.keymap.set("n", "]z", ufo.openAllFolds)
-		end,
-	},
-	{
-		"echasnovski/mini.bracketed",
-		config = function()
-			require("mini.bracketed").setup({
-				buffer = { suffix = "", options = {} },
-				comment = { suffix = "c", options = {} },
-				conflict = { suffix = "x", options = {} },
-				diagnostic = { suffix = "d", options = {} },
-				file = { suffix = "", options = {} },
-				indent = { suffix = "i", options = {} },
-				jump = { suffix = "j", options = {} },
-				location = { suffix = "l", options = {} },
-				oldfile = { suffix = "o", options = {} },
-				quickfix = { suffix = "q", options = {} },
-				treesitter = { suffix = "t", options = {} },
-				undo = { suffix = "u", options = {} },
-				window = { suffix = "", options = {} },
-				yank = { suffix = "y", options = {} },
-			})
-		end,
-	},
-	{
 		"stevearc/dressing.nvim",
 		event = "VeryLazy",
 	},
@@ -52,17 +17,8 @@ return {
 			"nvim-lua/plenary.nvim",
 		},
 		keys = {
-			{ "<Leader>ii", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+			{ "<Leader>l", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 		},
-	},
-	{
-		"folke/tokyonight.nvim",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			vim.cmd("colorscheme tokyonight-night")
-		end,
-		opts = {},
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
