@@ -1,27 +1,16 @@
 return {
 	"folke/trouble.nvim",
-	opts = {}, -- for default options, refer to the configuration section for custom setup.
+	opts = { focus = true },
 	cmd = "Trouble",
 	keys = {
+		{ "<leader>xw", "<cmd>Trouble diagnostics toggle<CR>", desc = "Open trouble workspace diagnostics" },
 		{
-			"<leader>xx",
-			"<cmd>Trouble diagnostics toggle<cr>",
-			desc = "Diagnostics (Trouble)",
+			"<leader>xd",
+			"<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
+			desc = "Open trouble document diagnostics",
 		},
-		{
-			"<leader>xX",
-			"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-			desc = "Buffer Diagnostics (Trouble)",
-		},
-		{
-			"<leader>xL",
-			"<cmd>Trouble loclist toggle<cr>",
-			desc = "Location List (Trouble)",
-		},
-		{
-			"<leader>xQ",
-			"<cmd>Trouble qflist toggle<cr>",
-			desc = "Quickfix List (Trouble)",
-		},
+		{ "<leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
+		{ "<leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
+		{ "<leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
 	},
 }

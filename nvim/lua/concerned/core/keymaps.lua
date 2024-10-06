@@ -5,7 +5,7 @@ nvim_set_keymap("i", "jk", "<Esc>", { desc = "Escape" })
 nvim_set_keymap("i", "JK", "<Esc>", { desc = "Escape" })
 nvim_set_keymap("n", "<Leader>q", ":q!<CR>", { desc = "Exit without saving" })
 nvim_set_keymap("n", "<Leader>s", ":w<CR>", { desc = "Save" })
-nvim_set_keymap("n", "<Leader>\\", ":nohl<CR>", {})
+nvim_set_keymap("n", "<Leader><Leader>", ":nohl<CR>", {})
 nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 

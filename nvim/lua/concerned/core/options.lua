@@ -1,5 +1,6 @@
 local opt = vim.opt
 
+vim.g.mapleader = "\\"
 vim.g.netrw_banner = 0
 opt.autoindent = true
 opt.autoread = true
@@ -51,4 +52,13 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = open_package_json,
 	nested = true,
+})
+
+vim.api.nvim_create_user_command("SplitOnBranch", function(opts)
+	local default_branch = "main"
+	local branch = opts.args ~= "" and opts.args or default_branch
+
+	vim.cmd(":Gvsplit " .. branch .. ":%")
+end, {
+	nargs = "?", -- The command takes an optional argument
 })
