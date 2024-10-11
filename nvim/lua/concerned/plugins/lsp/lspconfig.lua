@@ -111,6 +111,22 @@ return {
 						"svelte",
 						"elm",
 					},
+					settings = {
+						tailwindCSS = {
+							experimental = {
+								classRegex = {
+									'class="([^"]+)"',
+									"class='([^']+)'",
+									'className="([^"]+)"',
+									"className='([^']+)'",
+									'classValue="([^"]+)"',
+									-- For Elm files
+									-- https://www.reddit.com/r/elm/comments/1asfxor/how_to_setup_tailwind_css_intellisense_on/
+									'\\bclass\\s+"([^"]*)"',
+								},
+							},
+						},
+					},
 				})
 			end,
 			["lua_ls"] = function()
