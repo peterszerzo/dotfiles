@@ -19,19 +19,19 @@ return {
 
 		ls.setup()
 
-		vim.keymap.set({ "i" }, "<C-K>", function()
+		vim.keymap.set({ "i" }, "<C-k>", function()
 			ls.expand()
 		end, { silent = true })
 
-		vim.keymap.set({ "i", "s" }, "<C-L>", function()
+		vim.keymap.set({ "i", "s" }, "<C-l>", function()
 			ls.jump(1)
 		end, { silent = true })
 
-		vim.keymap.set({ "i", "s" }, "<C-J>", function()
+		vim.keymap.set({ "i", "s" }, "<C-j>", function()
 			ls.jump(-1)
 		end, { silent = true })
 
-		vim.keymap.set({ "i", "s" }, "<C-E>", function()
+		vim.keymap.set({ "i", "s" }, "<C-h>", function()
 			if ls.choice_active() then
 				ls.change_choice(1)
 			end
@@ -53,8 +53,7 @@ return {
 					[[
                                             BasicButton.{}
                                               [ BasicButton.{}
-                                              , BasicButton.onClick <| Debug.todo ""
-                                              , BasicButton.linkTo "https://"
+                                              , BasicButton.{} <| Debug.todo ""
                                               , Attr.if_ False BasicButton.padded
                                               , Attr.if_ False BasicButton.activated
                                               ]
@@ -65,8 +64,25 @@ return {
 					{
 						c(1, { t("accent"), t("primary80"), t("primary60"), t("error") }),
 						c(2, { t("small"), t("medium"), t("large") }),
-						i(3),
+						c(3, { t("onClick"), t("linkTo") }),
 						i(4),
+						i(5, "add"),
+					}
+				)
+			),
+			s(
+				{ trig = "dmb", name = "Design System MainButton" },
+				fmt(
+					[[
+                                            MainButton.{}
+                                              [ MainButton.{} <| Debug.todo ""
+                                              ]
+                                              "{}"
+                                        ]],
+					{
+						c(1, { t("regular"), t("danger") }),
+						c(2, { t("onClick"), t("linkTo") }),
+						i(3),
 					}
 				)
 			),

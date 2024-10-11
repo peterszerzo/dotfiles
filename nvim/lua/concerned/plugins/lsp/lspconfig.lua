@@ -100,8 +100,7 @@ return {
 					end,
 				})
 			end,
-			-- TODO: figure out how to get the Tailwind LSP work in Elm files
-			--[[ ["tailwindcss"] = function()
+			["tailwindcss"] = function()
 				lspconfig["tailwindcss"].setup({
 					capabilities = capabilities,
 					filetypes = {
@@ -111,19 +110,6 @@ return {
 						"typescript",
 						"svelte",
 						"elm",
-					},
-				})
-			end, ]]
-			["emmet_ls"] = function()
-				-- configure emmet language server
-				lspconfig["emmet_ls"].setup({
-					capabilities = capabilities,
-					filetypes = {
-						"html",
-						"typescriptreact",
-						"javascriptreact",
-						"css",
-						"svelte",
 					},
 				})
 			end,
