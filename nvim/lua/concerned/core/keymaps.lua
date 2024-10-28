@@ -14,10 +14,6 @@ vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse!<CR>")
 vim.keymap.set({ "n", "v", "l" }, "<Leader>id", ":Gdiff<CR>")
 vim.keymap.set({ "n" }, "<Leader>b", "<C-^>", { desc = "Previous file" })
 
-vim.keymap.set("n", "<Leader>c", function()
-	vim.cmd("e ~/.config/nvim/init.lua")
-end)
-
 vim.keymap.set("n", "<Leader>p", function()
 	local ft = vim.bo.filetype
 	if ft == "elm" then

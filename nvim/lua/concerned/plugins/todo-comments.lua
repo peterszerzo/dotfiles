@@ -16,6 +16,8 @@ return {
 			todo_comments.jump_prev()
 		end, { desc = "Previous todo comment" })
 
+		vim.keymap.set("n", "<Leader>fo", ":TodoTelescope<CR>", { desc = "Search TODO's" })
+
 		todo_comments.setup()
 	end,
 }

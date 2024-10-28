@@ -41,7 +41,7 @@ return {
 			s({ trig = "todo", name = "TODO comment" }, fmt("-- TODO: {}", { i(1) })),
 			s(
 				{ trig = "hn", name = "HTML node" },
-				fmt('H.{} [ HA.className "{}" ] [ H.text "{}" ]', {
+				fmt('H.{} [ HA.class "{}" ] [ H.text "{}" ]', {
 					i(1, "div"),
 					i(2),
 					i(3),
