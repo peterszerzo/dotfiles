@@ -10,6 +10,7 @@ return {
 				typescript = { "prettier" },
 				typescriptreact = { "prettier" },
 				css = { "prettier" },
+				svelte = { "prettier" },
 			},
 			format_after_save = {
 				lsp_fallback = true,

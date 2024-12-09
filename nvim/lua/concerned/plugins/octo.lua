@@ -9,8 +9,6 @@ return {
 		vim.keymap.set("n", "<Leader>fi", ":Octo issue list<CR>", { desc = "Search issues (Octo)" })
 		vim.keymap.set("n", "<Leader>oic", ":Octo issue create<CR>", { desc = "Create issue (Octo)" })
 		vim.keymap.set("n", "<Leader>opc", ":Octo pr create<CR>", { desc = "Create PR (Octo)" })
-		vim.keymap.set("n", "<Leader>opm", ":Octo pr merge<CR>", { desc = "Merge PR (Octo)" })
-		vim.keymap.set("n", "<Leader>ors", ":Octo review start<CR>", { desc = "Start review (Octo)" })
-		vim.keymap.set("n", "<Leader>oru", ":Octo review submit<CR>", { desc = "Submit review (Octo)" })
+		vim.keymap.set("n", "<Leader>oph", ":Octo pr checks<CR>", { desc = "Show PR checks (Octo)" })
 	end,
 }
