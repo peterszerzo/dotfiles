@@ -13,20 +13,20 @@ return {
 	cmd = "Trouble",
 	keys = {
 		{
-			"<leader>xw",
+			"<Leader>xw",
 			"<cmd>Trouble diagnostics toggle<CR>",
 			desc = "Open trouble workspace diagnostics",
 		},
 		{
-			"<leader>xd",
+			"<Leader>xd",
 			"<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
 			desc = "Open trouble document diagnostics",
 		},
-		{ "<leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
-		{ "<leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
-		{ "<leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
+		{ "<Leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
+		{ "<Leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
+		{ "<Leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
 		{
-			"<leader>xs",
+			"<Leader>xs",
 			"<cmd>Trouble symbols toggle<CR>",
 			desc = "Open symbols in trouble",
 		},
