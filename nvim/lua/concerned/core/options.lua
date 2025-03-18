@@ -54,7 +54,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	nested = true,
 })
 
-vim.api.nvim_create_user_command("SplitOnBranch", function(opts)
+vim.api.nvim_create_user_command("VSBranch", function(opts)
 	local default_branch = "main"
 	local branch = opts.args ~= "" and opts.args or default_branch
 
