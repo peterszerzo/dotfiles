@@ -5,9 +5,8 @@ return {
 		require("octo").setup()
 
 		-- Octo PRs
-		vim.keymap.set("n", "<Leader>op", ":Octo pr list<CR>", { desc = "Search PR's (Octo)" })
-		vim.keymap.set("n", "<Leader>oi", ":Octo issue list<CR>", { desc = "Search issues (Octo)" })
-		vim.keymap.set("n", "<Leader>ocp", ":Octo pr create<CR>", { desc = "Create PR (Octo)" })
-		vim.keymap.set("n", "<Leader>oci", ":Octo issue create<CR>", { desc = "Create issue (Octo)" })
+		vim.keymap.set("n", "<Leader>tpc", ":Octo pr<CR>", { desc = "Current PR (Octo)" })
+		vim.keymap.set("n", "<Leader>tpl", ":Octo pr list<CR>", { desc = "List PR's (Octo)" })
+		vim.keymap.set("n", "<Leader>tpn", ":Octo pr create<CR>", { desc = "New PR (Octo)" })
 	end,
 }

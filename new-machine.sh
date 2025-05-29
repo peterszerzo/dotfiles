@@ -2,16 +2,13 @@
 defaults write com.apple.finder AppleShowAllFiles -bool true
 
 # Install homebrew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap homebrew/cask
-brew install brew-cask
-brew tap caskroom/versions
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Brew install basics
-brew install z tmux lua-language-server
-brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
+brew install fzf ripgrep lazygit fish neovim tmux lua-language-server
+# brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
 
 # Desktop apps
-brew cask install dash vlc 1password
+brew install --cask raycast vlc arc firefox kitty 1password
 
-npm i -g elm serve
+npm i -g elm serve @elm-tooling/elm-language-server
