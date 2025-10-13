@@ -8,10 +8,6 @@ return {
 	"tidalcycles/vim-tidal",
 	"BurntSushi/ripgrep",
 	{
-		"stevearc/dressing.nvim",
-		event = "VeryLazy",
-	},
-	{
 		"norcalli/nvim-colorizer.lua",
 		config = function()
 			require("colorizer").setup({ "css", "javascript", "typescript", "typescriptreact" })
