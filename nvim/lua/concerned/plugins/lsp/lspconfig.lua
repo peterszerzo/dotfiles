@@ -123,68 +123,55 @@ return {
 		end
 
 		mason_lspconfig.setup({
-			-- default handler for installed servers
-			function(server_name)
-				lspconfig[server_name].setup({
-					capabilities = capabilities,
-				})
-			end,
-			["svelte"] = function()
-				-- configure svelte server
-				lspconfig["svelte"].setup({
-					capabilities = capabilities,
-					on_attach = function(client, bufnr)
-						vim.api.nvim_create_autocmd("BufWritePost", {
-							pattern = { "*.js", "*.ts" },
-							callback = function(ctx)
-								-- Here use ctx.match instead of ctx.file
-								client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
-							end,
-						})
-					end,
-				})
-			end,
-			["tailwindcss"] = function()
-				lspconfig["tailwindcss"].setup({
-					capabilities = capabilities,
-					filetypes = {
-						"html",
-						"css",
-						"typescriptreact",
-						"typescript",
-						"svelte",
-						"elm",
-					},
-					settings = {
-						tailwindCSS = {
-							experimental = {
-								classRegex = {
-									-- Activate autocomplete within all string literals
-									'"([^"]*)"',
-									"'([^\"]*)'",
+			handlers = {
+				-- default handler for installed servers
+				function(server_name)
+					lspconfig[server_name].setup({
+						capabilities = capabilities,
+					})
+				end,
+				["tailwindcss"] = function()
+					lspconfig["tailwindcss"].setup({
+						capabilities = capabilities,
+						filetypes = {
+							"html",
+							"css",
+							"typescriptreact",
+							"typescript",
+							"svelte",
+							"elm",
+						},
+						settings = {
+							tailwindCSS = {
+								experimental = {
+									classRegex = {
+										-- Activate autocomplete within all string literals
+										'"([^"]*)"',
+										"'([^\"]*)'",
+									},
 								},
 							},
 						},
-					},
-				})
-			end,
-			["lua_ls"] = function()
-				-- configure lua server (with special settings)
-				lspconfig["lua_ls"].setup({
-					capabilities = capabilities,
-					settings = {
-						Lua = {
-							-- make the language server recognize "vim" global
-							diagnostics = {
-								globals = { "vim" },
-							},
-							completion = {
-								callSnippet = "Replace",
+					})
+				end,
+				["lua_ls"] = function()
+					-- configure lua server (with special settings)
+					lspconfig["lua_ls"].setup({
+						capabilities = capabilities,
+						settings = {
+							Lua = {
+								-- make the language server recognize "vim" global
+								diagnostics = {
+									globals = { "vim" },
+								},
+								completion = {
+									callSnippet = "Replace",
+								},
 							},
 						},
-					},
-				})
-			end,
+					})
+				end,
+			},
 		})
 	end,
 }
