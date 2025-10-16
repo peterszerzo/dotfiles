@@ -122,55 +122,29 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
-		mason_lspconfig.setup({
-			handlers = {
-				-- default handler for installed servers
-				function(server_name)
-					lspconfig[server_name].setup({
-						capabilities = capabilities,
-					})
-				end,
-				["tailwindcss"] = function()
-					lspconfig["tailwindcss"].setup({
-						capabilities = capabilities,
-						filetypes = {
-							"html",
-							"css",
-							"typescriptreact",
-							"typescript",
-							"svelte",
-							"elm",
+		vim.lsp.config("*", {
+			capabilities = capabilities,
+		})
+
+		vim.lsp.config("tailwindcss", {
+			filetypes = {
+				"html",
+				"css",
+				"typescriptreact",
+				"typescript",
+				"svelte",
+				"elm",
+			},
+			settings = {
+				tailwindCSS = {
+					experimental = {
+						classRegex = {
+							-- Activate autocomplete within all string literals
+							'"([^"]*)"',
+							"'([^\"]*)'",
 						},
-						settings = {
-							tailwindCSS = {
-								experimental = {
-									classRegex = {
-										-- Activate autocomplete within all string literals
-										'"([^"]*)"',
-										"'([^\"]*)'",
-									},
-								},
-							},
-						},
-					})
-				end,
-				["lua_ls"] = function()
-					-- configure lua server (with special settings)
-					lspconfig["lua_ls"].setup({
-						capabilities = capabilities,
-						settings = {
-							Lua = {
-								-- make the language server recognize "vim" global
-								diagnostics = {
-									globals = { "vim" },
-								},
-								completion = {
-									callSnippet = "Replace",
-								},
-							},
-						},
-					})
-				end,
+					},
+				},
 			},
 		})
 	end,
