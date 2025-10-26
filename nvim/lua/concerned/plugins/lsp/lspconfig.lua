@@ -7,10 +7,6 @@ return {
 		{ "folke/neodev.nvim", opts = {} },
 	},
 	config = function()
-		local lspconfig = require("lspconfig")
-
-		local mason_lspconfig = require("mason-lspconfig")
-
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
 		local keymap = vim.keymap
@@ -127,21 +123,24 @@ return {
 		})
 
 		vim.lsp.config("tailwindcss", {
-			filetypes = {
-				"html",
-				"css",
-				"typescriptreact",
-				"typescript",
-				"svelte",
-				"elm",
-			},
 			settings = {
 				tailwindCSS = {
+					includeLanguages = {
+						elm = "html",
+					},
+					filetypes = {
+						"html",
+						"css",
+						"typescriptreact",
+						"typescript",
+						"svelte",
+						"elm",
+					},
 					experimental = {
 						classRegex = {
 							-- Activate autocomplete within all string literals
-							'"([^"]*)"',
-							"'([^\"]*)'",
+							{ '"([^"]*)"' },
+							{ "'([^\"]*)'" },
 						},
 					},
 				},
