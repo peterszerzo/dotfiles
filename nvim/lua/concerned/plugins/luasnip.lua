@@ -48,6 +48,92 @@ return {
 				})
 			),
 			s(
+				{ trig = "nlxnode", name = "NLX node" },
+				fmt(
+					[[
+module Flow.NodeType.{} exposing ({}Payload, emptyPayload, encode, decoder, view)
+
+import Flow.SimpleContext exposing (SimpleContext)
+import Domain.Placeholder as Placeholder
+import Html as H
+import Json.Decode as Decode
+import Json.Decode.Pipeline as Pipeline
+import Json.Encode as Encode
+import Schema exposing (Schema)
+import Ui.Inputs.Label as Label
+import Ui.Inputs.Text as Text
+import Ui.Sidebar.Block as SidebarBlock
+
+
+type alias {}Payload =
+    {{ {} : String }}
+
+
+emptyPayload : {}Payload
+emptyPayload =
+    {{ {} = "" }}
+
+
+encode : {}Payload -> Encode.Value
+encode {{ {} }} =
+    Encode.object [ ( "{}", Encode.string {} ) ]
+
+
+decoder : Decode.Decoder {}Payload
+decoder =
+    Decode.succeed {}Payload
+        |> Pipeline.required "{}" Decode.string
+
+
+view :
+    {{ context : SimpleContext a
+    , payload : {}Payload
+    , localVariables : List ( String, Schema )
+    , onChange : {}Payload -> msg
+    }}
+    -> List (H.Html msg)
+view {{ context, payload, localVariables, onChange }} =
+    let
+        placeholders =
+            Placeholder.allFromContext context
+                {{ localVariables = localVariables
+                , fields = []
+                , includeComplexDataTypes = False
+                }}
+    in
+    [ SidebarBlock.view []
+        [ Text.text 
+            [ Text.placeholders placeholders
+            , Text.placeholder "Enter value"
+            , Text.onChange (\val -> onChange {{ payload | {} = val }})
+            ] 
+            payload.{}
+            |> Label.top [ Label.tooltip "I am going to be very helpful" ] "Field label"
+        ]
+    ]
+                                ]],
+					{
+						i(1),
+						rep(1),
+						rep(1),
+						i(2),
+						rep(1),
+						rep(2),
+						rep(1),
+						rep(2),
+						rep(2),
+						rep(2),
+						rep(1),
+						rep(1),
+						rep(2),
+						rep(1),
+						rep(1),
+						rep(2),
+						rep(2),
+					}
+				)
+			),
+			s(
 				{ trig = "dbb", name = "Design System BasicButton" },
 				fmt(
 					[[
@@ -90,6 +176,26 @@ return {
 
 		ls.add_snippets("typescriptreact", {
 			s({ trig = "todo", name = "TODO comment" }, fmt("// TODO: {}", { i(1) })),
+			s(
+				{ trig = "cattr", name = "Custom element attribute" },
+				fmt(
+					[[
+    #{}!: {};
+
+    get {}(): {} {{
+      return this.#{};
+    }}
+
+    set {}(val: {}) {{
+      if (!equals(this.#{}, val)) {{
+        this.#{} = val;
+        this.scheduleUpdate();
+      }}
+    }}
+                        ]],
+					{ i(1), i(2), rep(1), rep(2), rep(1), rep(1), rep(2), rep(1), rep(1) }
+				)
+			),
 			s(
 				{ trig = "rc", name = "React component" },
 				fmt(
