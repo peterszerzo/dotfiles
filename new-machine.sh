@@ -5,7 +5,7 @@ defaults write com.apple.finder AppleShowAllFiles -bool true
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Brew install basics
-brew install gh yazi fzf ripgrep lazygit fish neovim tmux lua-language-server
+brew install gh yazi fzf ripgrep lazygit fish neovim tmux lua-language-server zoxide
 
 gh extension install dlvhdr/gh-dash
 

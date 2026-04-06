@@ -23,3 +23,5 @@ function cwt --description "Create a worktree for Claude"
  
     git worktree add $worktree_path -b $branch && cd $worktree_path
 end
+
+zoxide init fish | source
