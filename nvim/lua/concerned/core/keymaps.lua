@@ -11,10 +11,14 @@ nvim_set_keymap("n", "<Leader><Leader>", ":nohl<CR>", {})
 nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
--- Git shortcuts
-vim.keymap.set({ "n", "v", "l" }, "<Leader>ib", ":GBrowse!<CR>")
-vim.keymap.set({ "n", "v", "l" }, "<Leader>id", ":Gdiff<CR>")
 vim.keymap.set({ "n" }, "<Leader>p", "<C-^>", { desc = "Previous file" })
+
+vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>")
+vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", ":Gdiff<CR>")
+vim.keymap.set("n", "<Leader>gs", ":Git<CR>", { desc = "Git status" })
+vim.keymap.set("n", "<Leader>gc", ":Git commit<CR>", { desc = "Git commit" })
+vim.keymap.set("n", "<Leader>gp", ":Git push<CR>", { desc = "Git push" })
+vim.keymap.set("n", "<Leader>gl", ":Git pull<CR>", { desc = "Git pull" })
 
 vim.api.nvim_create_user_command("Format", function()
 	local ft = vim.bo.filetype

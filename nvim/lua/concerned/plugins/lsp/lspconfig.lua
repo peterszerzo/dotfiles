@@ -97,13 +97,6 @@ return {
 					vim.lsp.buf.hover,
 					{ buffer = ev.buf, silent = true, desc = "Show documentation for what is under cursor" }
 				)
-
-				keymap.set(
-					"n",
-					"<Leader>e",
-					vim.diagnostic.open_float,
-					{ buffer = ev.buf, silent = true, desc = "Show documentation for what is under cursor" }
-				)
 			end,
 		})
 

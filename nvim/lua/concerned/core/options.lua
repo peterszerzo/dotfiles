@@ -1,6 +1,5 @@
 local opt = vim.opt
 
-vim.g.mapleader = "\\"
 vim.g.netrw_banner = 0
 opt.autoindent = true
 opt.autoread = true
