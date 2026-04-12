@@ -10,27 +10,27 @@ return {
 	keys = {
 		{
 			"<Leader>oi",
-			"<CMD>Octo issue list<CR>",
+			"<cmd>Octo issue list<CR>",
 			desc = "List GitHub issues",
 		},
 		{
 			"<Leader>op",
-			"<CMD>Octo pr list<CR>",
+			"<cmd>Octo pr list<CR>",
 			desc = "List GitHub pull requests",
 		},
 		{
 			"<Leader>oc",
-			"<CMD>Octo pr create<CR>",
+			"<cmd>Octo pr create<CR>",
 			desc = "List GitHub pull requests",
 		},
 		{
 			"<Leader>od",
-			"<CMD>Octo discussion list<CR>",
+			"<cmd>Octo discussion list<CR>",
 			desc = "List GitHub discussions",
 		},
 		{
 			"<Leader>on",
-			"<CMD>Octo notification list<CR>",
+			"<cmd>Octo notification list<CR>",
 			desc = "List GitHub notifications",
 		},
 		{
