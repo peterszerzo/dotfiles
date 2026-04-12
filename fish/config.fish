@@ -11,6 +11,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 abbr --add lgtm 'gh pr review --approve && gh pr merge --squash --auto && git checkout main && git branch -d @{-1}'
 abbr --add keych 'ssh-add --apple-use-keychain ~/.ssh/id_ed25519'
+abbr --add ghco 'gh pr checkout'
+abbr --add ghl 'gh pr list'
 
 function cwt --description "Create a worktree for Claude"
     if test (count $argv) -eq 0
@@ -25,3 +27,4 @@ function cwt --description "Create a worktree for Claude"
 end
 
 zoxide init fish | source
+fzf --fish | source
