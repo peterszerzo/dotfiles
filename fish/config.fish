@@ -9,10 +9,21 @@ set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; se
 
 export PATH="$HOME/.local/bin:$PATH"
 
-abbr --add lgtm 'gh pr review --approve && gh pr merge --squash --auto && git checkout main && git branch -d @{-1}'
 abbr --add keych 'ssh-add --apple-use-keychain ~/.ssh/id_ed25519'
 abbr --add ghco 'gh pr checkout'
 abbr --add ghl 'gh pr list'
+
+function lgtm
+    # If a PR number is given, check it out first
+    if set -q argv[1]
+        gh pr checkout $argv[1]; or return
+    end
+
+    gh pr review --approve
+        and gh pr merge --squash --auto
+        and git checkout main
+        and git branch -d @{-1}
+end
 
 function cwt --description "Create a worktree for Claude"
     if test (count $argv) -eq 0

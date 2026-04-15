@@ -21,7 +21,7 @@ return {
 		{
 			"<Leader>oc",
 			"<cmd>Octo pr create<CR>",
-			desc = "List GitHub pull requests",
+			desc = "Create GitHub pull request",
 		},
 		{
 			"<Leader>od",

@@ -11,7 +11,7 @@ nvim_set_keymap("n", "<Leader><Leader>", ":nohl<CR>", {})
 nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
-vim.keymap.set({ "n" }, "<Leader>p", "<C-^>", { desc = "Previous file" })
+vim.keymap.set({ "n" }, "<BS>", "<C-^>", { desc = "Previous file" })
 
 vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>")
 vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", ":Gdiff<CR>")
