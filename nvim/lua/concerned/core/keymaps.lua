@@ -20,6 +20,8 @@ vim.keymap.set("n", "<Leader>gc", ":Git commit<CR>", { desc = "Git commit" })
 vim.keymap.set("n", "<Leader>gp", ":Git push<CR>", { desc = "Git push" })
 vim.keymap.set("n", "<Leader>gl", ":Git pull<CR>", { desc = "Git pull" })
 
+vim.keymap.set("n", "<Leader>p", ":e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
+
 vim.api.nvim_create_user_command("Format", function()
 	local ft = vim.bo.filetype
 	if ft == "elm" then
