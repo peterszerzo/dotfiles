@@ -10,6 +10,6 @@ brew install gh yazi fzf ripgrep lazygit fish neovim tmux lua-language-server zo
 gh extension install dlvhdr/gh-dash
 
 # Desktop apps
-brew install --cask raycast vlc arc firefox kitty 1password
+brew install --cask raycast vlc firefox kitty 1password
 
 npm i -g elm serve @elm-tooling/elm-language-server
