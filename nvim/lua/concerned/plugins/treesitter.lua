@@ -9,7 +9,14 @@ return {
 				-- Enable treesitter highlighting and disable regex syntax
 				pcall(vim.treesitter.start)
 				-- Enable treesitter-based indentation
-				vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				if vim.bo.filetype == "elm" then
+					-- Use smartindent for Elm
+					vim.bo.indentexpr = ""
+					vim.bo.smartindent = true
+				else
+					-- Enable treesitter-based indentation for other languages
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end
 			end,
 		})
 		local ensureInstalled = { "typescript", "tsx", "javascript", "elm", "lua" }

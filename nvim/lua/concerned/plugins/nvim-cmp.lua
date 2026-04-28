@@ -33,7 +33,6 @@ return {
 				{ name = "buffer" },
 				{ name = "path" },
 				{ name = "line" },
-				-- { name = "copilot" },
 			}),
 		})
 	end,
