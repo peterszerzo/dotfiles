@@ -1,18 +1,25 @@
-fish_default_key_bindings
+set -g fish_key_bindings fish_default_key_bindings
 
 set -Ux EDITOR nvim
 set -x MANPAGER "nvim +Man!"
 
-set PATH /usr/local/bin /usr/bin /bin /usr/sbin /sbin /opt/homebrew/bin /opt/homebrew/sbin ~/.cargo/bin ~/.local/bin $PATH
-
-set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /Users/peterszerzo/.ghcup/bin # ghcup-env
-
-export PATH="$HOME/.local/bin:$PATH"
+set PATH /usr/local/bin /usr/bin /bin /usr/sbin /sbin /opt/homebrew/bin /opt/homebrew/sbin ~/.local/bin $PATH
 
 abbr --add keych 'ssh-add --apple-use-keychain ~/.ssh/id_ed25519'
-abbr --add ghco 'gh pr checkout'
-abbr --add ghl 'gh pr list'
+abbr --add ghprco 'gh pr checkout'
+abbr --add ghprl 'gh pr list'
 
+# Get the origin of a GitHub PR - either by PR number or without an argument for the current PR
+function ghprog 
+    # If a PR number is given, check it out first
+    if set -q argv[1]
+        gh pr view $argv[1] --json headRefName,baseRefName
+    end
+
+    gh pr view --json headRefName,baseRefName
+end
+
+# The GitHub PR looks good to me - approve, merge, delete and forget the PR based on the current branch, check out `main` in the end
 function lgtm
     # If a PR number is given, check it out first
     if set -q argv[1]
@@ -25,16 +32,8 @@ function lgtm
         and git branch -d @{-1}
 end
 
-function cwt --description "Create a worktree for Claude"
-    if test (count $argv) -eq 0
-        echo "Usage: cwt <branch-name>"
-        return 1
-    end
- 
-    set branch $argv[1]
-    set worktree_path .claude/worktrees/$branch
- 
-    git worktree add $worktree_path -b $branch && cd $worktree_path
+if test -f ~/.config/fish/local.fish
+    source ~/.config/fish/local.fish
 end
 
 zoxide init fish | source

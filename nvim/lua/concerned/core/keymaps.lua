@@ -41,6 +41,21 @@ vim.api.nvim_create_user_command("Format", function()
 end, {})
 
 -- Function to copy file path and visual selection range, example @src/index.js:5-10
+local function copy_file_for_coding_agent()
+	-- Get the relative path from the current working directory
+	local file_path = vim.fn.expand("%")
+
+	-- Format the string
+	local reference = string.format("@%s", file_path)
+
+	-- Copy to system clipboard (+ register)
+	vim.fn.setreg("+", reference)
+
+	-- Notify the user
+	print("Copied: " .. reference)
+end
+
+-- Function to copy file path and visual selection range, example @src/index.js:5-10
 local function copy_visual_selection_for_coding_agent()
 	-- Get the relative path from the current working directory
 	local file_path = vim.fn.expand("%")
@@ -60,13 +75,15 @@ local function copy_visual_selection_for_coding_agent()
 	print("Copied: " .. reference)
 end
 
--- Create the keybinding
--- Using 'v' for visual mode specifically
 vim.keymap.set("v", "<Leader>c", function()
 	-- We must exit visual mode to update the '< and '> marks
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
 	copy_visual_selection_for_coding_agent()
-end, { desc = "Copy coding agent reference" })
+end, { desc = "Copy coding agent reference (visual selection)" })
+
+vim.keymap.set("n", "<Leader>c", function()
+	copy_file_for_coding_agent()
+end, { desc = "Copy coding agent reference (file)" })
 
 local function open_coding_agent_reference(input)
 	-- Pattern matches @path/to/file.ext:start-end
