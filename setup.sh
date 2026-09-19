@@ -1,13 +1,19 @@
+#!/bin/sh
+set -eu
 
 # Cleanup
 cd ~
-rm -rf dotfiles .config/nvim/init.lua .config/fish/config.fish .config/tmux/tmux.conf
+rm -rf dotfiles .config/nvim .config/fish .tmux.conf .config/kitty/kitty.conf .config/lazygit/config.yml
 git clone git@github.com:peterszerzo/dotfiles.git
 
+mkdir -p .config .config/kitty .config/lazygit
+
 # Set up symlinks
-rm -rf ~/.config/nvim ~/.config/fish/config.fish ~/.config/fish/fish_plugins ~/.config/tmux/tmux.conf
-ln -s ~/dotfiles/nvim ~/.config
-ln -sv ~/dotfiles/fish/config.fish ~/.config/fish
-ln -sv ~/dotfiles/fish/fish_plugins ~/.config/fish
-ln -sv ~/dotfiles/fish/functions/fish_greeting.fish ~/.config/fish/functions
+ln -sv ~/dotfiles/nvim ~/.config
+ln -sv ~/dotfiles/fish ~/.config
 ln -sv ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
+ln -sv ~/dotfiles/kitty.conf ~/.config/kitty/kitty.conf
+ln -sv ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
+
+# Install fish plugins from fish_plugins (needs fisher, installed by new-machine.sh)
+fish -c 'fisher update'

@@ -1,9 +1,9 @@
 gui:
   scrollHeight: 16
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --dark --paging=never
+      command: delta --dark --paging=never
 customCommands:
   - key: "<c-r>"
     command: "git branch --set-upstream-to=origin/mainline && cr --publish --auto-merge"
