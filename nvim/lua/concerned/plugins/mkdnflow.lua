@@ -22,6 +22,7 @@ return {
 			backlinks = false,
 		},
 		to_do = {
+			status_order = { "not_started", "complete" },
 			statuses = {
 				complete = { marker = { "x", "X" } },
 			},
@@ -33,6 +34,8 @@ return {
 			MkdnNewListItemAboveInsert = { "n", "O" },
 			MkdnToggleToDo = { { "n", "v" }, "<Leader>lx" },
 			MkdnUpdateNumbering = { "n", "<Leader>nn" },
+			MkdnCreateLink = false,
+			MkdnCreateLinkFromClipboard = { { "n", "v" }, "<Leader>lp" },
 			MkdnFollowLink = { "n", "gx" },
 			MkdnNextHeading = { "n", "]]" },
 			MkdnPrevHeading = { "n", "[[" },
@@ -69,7 +72,6 @@ return {
 			MkdnTableAlignDefault = false,
 			MkdnFoldSection = false,
 			MkdnUnfoldSection = false,
-			MkdnCreateLinkFromClipboard = false,
 		},
 	},
 }

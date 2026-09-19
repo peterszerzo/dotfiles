@@ -32,6 +32,22 @@ vim.keymap.set("n", "<Leader>gl", ":Git pull<CR>", { desc = "Git pull" })
 vim.keymap.set("n", "<Leader>ea", ":e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
 vim.keymap.set("n", "<Leader>en", ":e ~/Documents/NOTES.md<CR>", { desc = "Open notes" })
 
+-- Wrap inner word or visual selection in a markdown link tag
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	group = vim.api.nvim_create_augroup("concerned_markdown_keymaps", {}),
+	callback = function(args)
+		vim.keymap.set("x", "<Leader>ll", 'c[<C-r>"]()<Left>', {
+			buffer = args.buf,
+			desc = "Link from selection",
+		})
+		vim.keymap.set("n", "<Leader>ll", 'ciw[<C-r>"]()<Left>', {
+			buffer = args.buf,
+			desc = "Link from word",
+		})
+	end,
+})
+
 vim.api.nvim_create_user_command("Format", function()
 	local ft = vim.bo.filetype
 	if ft == "elm" then
