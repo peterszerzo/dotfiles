@@ -22,6 +22,7 @@ opt.smartcase = true
 opt.smarttab = true
 opt.softtabstop = 2
 opt.swapfile = false
+opt.tabstop = 2
 opt.termguicolors = true
 opt.wrap = false
 opt.signcolumn = "yes:1"

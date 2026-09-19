@@ -5,30 +5,36 @@ return {
 		local alpha = require("alpha")
 		local dashboard = require("alpha.themes.dashboard")
 
-		-- Set header
+		-- Set header: a membership badge. Every line is exactly 39 display cells
+		-- wide so the borders line up; keep it that way when editing. The lines use
+		-- [[long strings]] so the backslashes in the portrait need no escaping.
 		dashboard.section.header.val = {
 			"",
 			"",
-			"   ╔═══════════════════════════════════════╗",
-			"   ║╔═════════════════════════════════════╗║",
-			"   ║║                                     ║║",
-			"   ║║      Business Programmers'          ║║",
-			"   ║║            Community                ║║",
-			"   ║║                                     ║║",
-			"   ║╚═════════════════════════════════════╝║",
-			"   ╚═══════════════════════════════════════╝",
+			[[╔═════════════════════════════════════╗]],
+			[[║                                     ║]],
+			[[║    BUSINESS PROGRAMMERS' SOCIETY    ║]],
+			[[║                                     ║]],
+			[[║ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ║]],
+			[[║                                     ║]],
+			[[║   ┌─────────────┐                   ║]],
+			[[║   │   _______   │                   ║]],
+			[[║   │  /   o   \  │                   ║]],
+			[[║   │ /_________\ │                   ║]],
+			[[║   │/___________\│   MEMBER   p0     ║]],
+			[[║   │ |  =   =  | │   NO.      2242   ║]],
+			[[║   │ |  o   o  | │   SINCE    2017   ║]],
+			[[║   │ |    |    | │                   ║]],
+			[[║   │ | :\___/: | │                   ║]],
+			[[║   │  \:::::::/  │                   ║]],
+			[[║   └─────────────┘                   ║]],
+			[[║                                     ║]],
+			[[╚═════════════════════════════════════╝]],
 			"",
 			"",
 		}
 
-		-- Set menu
-		dashboard.section.buttons.val = {
-			dashboard.button("f", "  Find File", ":Telescope find_files<CR>"),
-			dashboard.button("r", "  Recent Files", ":Telescope oldfiles<CR>"),
-			dashboard.button("g", "  Find Word", ":Telescope live_grep<CR>"),
-			dashboard.button("z", "  LazyGit", ":LazyGit<CR>"),
-			dashboard.button("q", "  Quit", ":qa<CR>"),
-		}
+		dashboard.section.buttons.val = {}
 
 		-- Set footer
 		local function footer()
@@ -43,5 +49,4 @@ return {
 		-- Disable folding on alpha buffer
 		vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
 	end,
-	dependencies = { "nvim-tree/nvim-web-devicons" },
 }

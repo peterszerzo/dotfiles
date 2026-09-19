@@ -8,9 +8,9 @@ return {
 	"tidalcycles/vim-tidal",
 	"BurntSushi/ripgrep",
 	{
-		"norcalli/nvim-colorizer.lua",
-		config = function()
-			require("colorizer").setup({ "css", "javascript", "typescript", "typescriptreact" })
-		end,
+		"catgoose/nvim-colorizer.lua",
+		opts = {
+			filetypes = { "css", "javascript", "typescript", "typescriptreact" },
+		},
 	},
 }

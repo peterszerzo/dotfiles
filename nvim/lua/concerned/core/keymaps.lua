@@ -7,6 +7,15 @@ nvim_set_keymap("i", "jk", "<Esc>", { desc = "Escape" })
 nvim_set_keymap("i", "JK", "<Esc>", { desc = "Escape" })
 nvim_set_keymap("n", "<Leader>q", ":q!<CR>", { desc = "Exit without saving" })
 nvim_set_keymap("n", "<Leader>s", ":w<CR>", { desc = "Save" })
+-- Restart, keeping the current buffers/windows/tabs. `:restart` accepts a
+-- command to run on the new server (`:h :restart`), so we write a session file
+-- first, then source and delete it once the new server is up.
+local restart_session = vim.fs.joinpath(vim.fn.stdpath("state"), "restart-session.vim")
+
+vim.keymap.set("n", "<Leader>t", function()
+	vim.cmd("mksession! " .. vim.fn.fnameescape(restart_session))
+	vim.cmd(("restart lua vim.cmd.source(%q) vim.fn.delete(%q)"):format(restart_session, restart_session))
+end, { desc = "Restart" })
 nvim_set_keymap("n", "<Leader><Leader>", ":nohl<CR>", {})
 nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
@@ -40,10 +49,15 @@ vim.api.nvim_create_user_command("Format", function()
 	end
 end, {})
 
+-- Get the current file path relative to the working directory
+-- Falls back to the absolute path when the file lives outside of cwd
+local function relative_file_path()
+	return vim.fn.fnamemodify(vim.fn.expand("%:p"), ":.")
+end
+
 -- Function to copy file path and visual selection range, example @src/index.js:5-10
 local function copy_file_for_coding_agent()
-	-- Get the relative path from the current working directory
-	local file_path = vim.fn.expand("%")
+	local file_path = relative_file_path()
 
 	-- Format the string
 	local reference = string.format("@%s", file_path)
@@ -57,8 +71,7 @@ end
 
 -- Function to copy file path and visual selection range, example @src/index.js:5-10
 local function copy_visual_selection_for_coding_agent()
-	-- Get the relative path from the current working directory
-	local file_path = vim.fn.expand("%")
+	local file_path = relative_file_path()
 
 	-- Get visual selection marks
 	-- '< and '> represent the start and end of the last visual selection
