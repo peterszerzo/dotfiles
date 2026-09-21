@@ -85,7 +85,7 @@ local function copy_file_for_coding_agent()
 	print("Copied: " .. reference)
 end
 
--- Function to copy file path and visual selection range, example @src/index.js:5-10
+-- Function to copy file path and visual selection range, example src/index.js:5-10
 local function copy_visual_selection_for_coding_agent()
 	local file_path = relative_file_path()
 
@@ -95,7 +95,7 @@ local function copy_visual_selection_for_coding_agent()
 	local end_line = vim.fn.getpos("'>")[2]
 
 	-- Format the string
-	local reference = string.format("@%s:%d-%d", file_path, start_line, end_line)
+	local reference = string.format("%s:%d-%d", file_path, start_line, end_line)
 
 	-- Copy to system clipboard (+ register)
 	vim.fn.setreg("+", reference)
@@ -115,8 +115,8 @@ vim.keymap.set("n", "<Leader>c", function()
 end, { desc = "Copy coding agent reference (file)" })
 
 local function open_coding_agent_reference(input)
-	-- Pattern matches @path/to/file.ext:start-end
-	local path, start_line, end_line = input:match("@?([^:]+):(%d+)-(%d+)")
+	-- Pattern matches path/to/file.ext:start-end, with an optional leading @
+	local path, start_line, end_line = input:match("^@?([^:]+):(%d+)%-(%d+)$")
 
 	if path and start_line and end_line then
 		-- Open the file
@@ -131,7 +131,7 @@ local function open_coding_agent_reference(input)
 		-- Move cursor to the end line to complete the selection
 		vim.api.nvim_win_set_cursor(0, { tonumber(end_line), 0 })
 	else
-		print("Invalid reference format. Use: @path/to/file:start-end")
+		print("Invalid reference format. Use: path/to/file:start-end")
 	end
 end
 
