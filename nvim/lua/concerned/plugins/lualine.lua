@@ -1,12 +1,12 @@
 return {
 	"nvim-lualine/lualine.nvim",
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = { "nvim-mini/mini.icons" },
 	config = function()
 		require("lualine").setup({
 			options = {
 				section_separators = { left = "", right = "" },
 				component_separators = { left = "|", right = "|" },
-				theme = "tokyonight",
+				theme = "rose-pine",
 			},
 			sections = {
 				lualine_c = { "filename" },

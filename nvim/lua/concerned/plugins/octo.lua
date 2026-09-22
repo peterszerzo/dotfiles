@@ -46,6 +46,6 @@ return {
 		"nvim-telescope/telescope.nvim",
 		-- OR "ibhagwan/fzf-lua",
 		-- OR "folke/snacks.nvim",
-		"nvim-tree/nvim-web-devicons",
+		"nvim-mini/mini.icons",
 	},
 }

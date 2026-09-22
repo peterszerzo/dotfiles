@@ -5,8 +5,10 @@ vim.g.mapleader = " "
 nvim_set_keymap("i", "jk", "<Esc>", { desc = "Escape" })
 -- Remap the uppercase version as well, in case caps lock or caps word is on
 nvim_set_keymap("i", "JK", "<Esc>", { desc = "Escape" })
-nvim_set_keymap("n", "<Leader>q", ":q!<CR>", { desc = "Exit without saving" })
-nvim_set_keymap("n", "<Leader>s", ":w<CR>", { desc = "Save" })
+nvim_set_keymap("n", "<Leader>q", "<Cmd>q!<CR>", { desc = "Exit without saving" })
+-- <Cmd> runs the command without entering command-line mode, so the noice
+-- cmdline popup does not flash open on the way through
+nvim_set_keymap("n", "<Leader>s", "<Cmd>w<CR>", { desc = "Save" })
 -- Restart, keeping the current buffers/windows/tabs. `:restart` accepts a
 -- command to run on the new server (`:h :restart`), so we write a session file
 -- first, then source and delete it once the new server is up.
@@ -15,22 +17,19 @@ local restart_session = vim.fs.joinpath(vim.fn.stdpath("state"), "restart-sessio
 vim.keymap.set("n", "<Leader>t", function()
 	vim.cmd("mksession! " .. vim.fn.fnameescape(restart_session))
 	vim.cmd(("restart lua vim.cmd.source(%q) vim.fn.delete(%q)"):format(restart_session, restart_session))
-end, { desc = "Restart" })
-nvim_set_keymap("n", "<Leader><Leader>", ":nohl<CR>", {})
+end, { desc = "Restart Neovim while preserving buffers" })
+
+nvim_set_keymap("n", "<Leader><Leader>", "<Cmd>nohl<CR>", { desc = "Clear highlights" })
 nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
 vim.keymap.set({ "n" }, "<BS>", "<C-^>", { desc = "Previous file" })
 
 vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>")
-vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", ":Gdiff<CR>")
-vim.keymap.set("n", "<Leader>gs", ":Git<CR>", { desc = "Git status" })
-vim.keymap.set("n", "<Leader>gc", ":Git commit<CR>", { desc = "Git commit" })
-vim.keymap.set("n", "<Leader>gp", ":Git push<CR>", { desc = "Git push" })
-vim.keymap.set("n", "<Leader>gl", ":Git pull<CR>", { desc = "Git pull" })
+vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", "<Cmd>Gdiff<CR>")
 
-vim.keymap.set("n", "<Leader>ea", ":e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
-vim.keymap.set("n", "<Leader>en", ":e ~/Documents/NOTES.md<CR>", { desc = "Open notes" })
+vim.keymap.set("n", "<Leader>ea", "<Cmd>e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
+vim.keymap.set("n", "<Leader>en", "<Cmd>e ~/Documents/NOTES.md<CR>", { desc = "Open notes" })
 
 -- Wrap inner word or visual selection in a markdown link tag
 vim.api.nvim_create_autocmd("FileType", {
@@ -72,7 +71,7 @@ local function relative_file_path()
 end
 
 -- Function to copy file path and visual selection range, example @src/index.js:5-10
-local function copy_file_for_coding_agent()
+local function copy_file_reference()
 	local file_path = relative_file_path()
 
 	-- Format the string
@@ -86,7 +85,7 @@ local function copy_file_for_coding_agent()
 end
 
 -- Function to copy file path and visual selection range, example src/index.js:5-10
-local function copy_visual_selection_for_coding_agent()
+local function copy_visual_selection_reference()
 	local file_path = relative_file_path()
 
 	-- Get visual selection marks
@@ -107,21 +106,30 @@ end
 vim.keymap.set("v", "<Leader>c", function()
 	-- We must exit visual mode to update the '< and '> marks
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
-	copy_visual_selection_for_coding_agent()
+	copy_visual_selection_reference()
 end, { desc = "Copy coding agent reference (visual selection)" })
 
 vim.keymap.set("n", "<Leader>c", function()
-	copy_file_for_coding_agent()
+	copy_file_reference()
 end, { desc = "Copy coding agent reference (file)" })
 
-local function open_coding_agent_reference(input)
-	-- Pattern matches path/to/file.ext:start-end, with an optional leading @
-	local path, start_line, end_line = input:match("^@?([^:]+):(%d+)%-(%d+)$")
+local function open_reference(input)
+	-- Pattern matches path/to/file.ext:start-end, where both the leading @ and
+	-- the :start-end line range are optional
+	local reference = input:gsub("^@", "")
+	local path, start_line, end_line = reference:match("^([^:]+):(%d+)%-(%d+)$")
+	path = path or reference:match("^([^:]+)$")
 
-	if path and start_line and end_line then
-		-- Open the file
-		vim.cmd("edit " .. path)
+	if not path then
+		print("Invalid reference format. Use: path/to/file or path/to/file:start-end")
+		return
+	end
 
+	-- Open the file
+	vim.cmd("edit " .. path)
+
+	-- Without a line range, stay in normal mode on the freshly opened file
+	if start_line then
 		-- Set cursor to the start line (1st column)
 		vim.api.nvim_win_set_cursor(0, { tonumber(start_line), 0 })
 
@@ -130,12 +138,12 @@ local function open_coding_agent_reference(input)
 
 		-- Move cursor to the end line to complete the selection
 		vim.api.nvim_win_set_cursor(0, { tonumber(end_line), 0 })
-	else
-		print("Invalid reference format. Use: path/to/file:start-end")
 	end
 end
 
--- Create the user command :GoRef
-vim.api.nvim_create_user_command("GoRef", function(opts)
-	open_coding_agent_reference(opts.args)
-end, { nargs = 1 })
+vim.api.nvim_create_user_command("Reselect", function(opts)
+	open_reference(opts.args)
+end, {
+	nargs = 1,
+	desc = "Take a file name + line number reference as defined with <Leader>c, and reselect it in the codebase",
+})

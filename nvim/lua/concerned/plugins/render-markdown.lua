@@ -4,7 +4,7 @@
 return {
 	"MeanderingProgrammer/render-markdown.nvim",
 	ft = { "markdown" },
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = { "nvim-mini/mini.icons" },
 	opts = {
 		checkbox = {
 			custom = {
