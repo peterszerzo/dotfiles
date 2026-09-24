@@ -6,8 +6,8 @@ nvim_set_keymap("i", "jk", "<Esc>", { desc = "Escape" })
 -- Remap the uppercase version as well, in case caps lock or caps word is on
 nvim_set_keymap("i", "JK", "<Esc>", { desc = "Escape" })
 nvim_set_keymap("n", "<Leader>q", "<Cmd>q!<CR>", { desc = "Exit without saving" })
--- <Cmd> runs the command without entering command-line mode, so the noice
--- cmdline popup does not flash open on the way through
+-- <Cmd> runs the command without entering command-line mode, so nothing flashes
+-- in the cmdline on the way through
 nvim_set_keymap("n", "<Leader>s", "<Cmd>w<CR>", { desc = "Save" })
 -- Restart, keeping the current buffers/windows/tabs. `:restart` accepts a
 -- command to run on the new server (`:h :restart`), so we write a session file
@@ -70,12 +70,14 @@ local function relative_file_path()
 	return vim.fn.fnamemodify(vim.fn.expand("%:p"), ":.")
 end
 
--- Function to copy file path and visual selection range, example @src/index.js:5-10
-local function copy_file_reference()
-	local file_path = relative_file_path()
+-- Get the current file path as an absolute path on this machine
+local function absolute_file_path()
+	return vim.fn.expand("%:p")
+end
 
-	-- Format the string
-	local reference = string.format("@%s", file_path)
+-- Function to copy the file path, example @src/index.js
+local function copy_file_reference(file_path, prefix)
+	local reference = prefix .. file_path
 
 	-- Copy to system clipboard (+ register)
 	vim.fn.setreg("+", reference)
@@ -85,9 +87,7 @@ local function copy_file_reference()
 end
 
 -- Function to copy file path and visual selection range, example src/index.js:5-10
-local function copy_visual_selection_reference()
-	local file_path = relative_file_path()
-
+local function copy_visual_selection_reference(file_path)
 	-- Get visual selection marks
 	-- '< and '> represent the start and end of the last visual selection
 	local start_line = vim.fn.getpos("'<")[2]
@@ -103,15 +103,28 @@ local function copy_visual_selection_reference()
 	print("Copied: " .. reference)
 end
 
-vim.keymap.set("v", "<Leader>c", function()
-	-- We must exit visual mode to update the '< and '> marks
+-- Leave visual mode so the '< and '> marks reflect the selection we just made
+local function exit_visual_mode()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
-	copy_visual_selection_reference()
+end
+
+vim.keymap.set("v", "<Leader>c", function()
+	exit_visual_mode()
+	copy_visual_selection_reference(relative_file_path())
 end, { desc = "Copy coding agent reference (visual selection)" })
 
 vim.keymap.set("n", "<Leader>c", function()
-	copy_file_reference()
+	copy_file_reference(relative_file_path(), "@")
 end, { desc = "Copy coding agent reference (file)" })
+
+vim.keymap.set("v", "<Leader>C", function()
+	exit_visual_mode()
+	copy_visual_selection_reference(absolute_file_path())
+end, { desc = "Copy absolute reference (visual selection)" })
+
+vim.keymap.set("n", "<Leader>C", function()
+	copy_file_reference(absolute_file_path(), "")
+end, { desc = "Copy absolute reference (file)" })
 
 local function open_reference(input)
 	-- Pattern matches path/to/file.ext:start-end, where both the leading @ and

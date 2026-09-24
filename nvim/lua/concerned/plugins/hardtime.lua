@@ -4,7 +4,7 @@ return {
 	opts = {},
 	config = function()
 		require("hardtime").setup({
-			max_count = 1,
+			max_count = 3,
 			restricted_keys = {
 				["w"] = { "n", "x" },
 				["W"] = { "n", "x" },

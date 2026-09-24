@@ -34,6 +34,8 @@ git:
       command: delta --dark --paging=never
 customCommands:
   - key: "<c-r>"
-    command: "git branch --set-upstream-to=origin/mainline && cr --publish --auto-merge"
+    # lazygit runs custom commands through $SHELL (fish), so delegate to sh for the case expression
+    command: |
+      sh -c 'origin=$(git remote get-url origin); case "$origin" in *github.com*) git push -u origin HEAD && gh pr create --fill ;; *git.amazon.com*|*gitfarm*) git branch --set-upstream-to=origin/mainline && cr --publish --auto-merge ;; *) echo "Unrecognized origin: $origin" >&2; exit 1 ;; esac'
     context: "global"
     output: log
