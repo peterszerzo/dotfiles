@@ -2,6 +2,8 @@ return {
 	"nvim-telescope/telescope.nvim",
 	dependencies = { "nvim-lua/plenary.nvim", { "nvim-telescope/telescope-fzf-native.nvim", build = "make" } },
 	config = function()
+		require("telescope").load_extension("fzf")
+
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<Leader>f", function()
 			builtin.find_files({ hidden = true, file_ignore_patterns = { "^%.git/" } })
@@ -23,5 +25,7 @@ return {
 		end, { desc = "Search command history" })
 		vim.keymap.set("n", "<Leader>'", builtin.commands, { desc = "Search commands" })
 		vim.keymap.set("n", "<Leader>m", builtin.lsp_document_symbols, { desc = "Search symbols" })
+
+		vim.keymap.set("n", "<Leader>u", require("concerned.crux").reviews, { desc = "Search code reviews" })
 	end,
 }

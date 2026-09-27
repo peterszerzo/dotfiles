@@ -4,13 +4,14 @@ vim.g.netrw_banner = 0
 opt.autoindent = true
 opt.autoread = true
 opt.backspace = "indent,eol,start"
-opt.clipboard = "unnamed"
+opt.clipboard = "unnamedplus"
 opt.colorcolumn = "120"
 opt.cursorline = true
 opt.expandtab = true
 opt.foldenable = true
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldlevel = 99
-opt.foldlevelstart = 99
 opt.ignorecase = true
 opt.inccommand = "split"
 opt.incsearch = true
@@ -32,7 +33,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Hightlight selection on yank",
 	pattern = "*",
 	callback = function()
-		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
+		vim.hl.on_yank({ higroup = "IncSearch", timeout = 150 })
 	end,
 })
 

@@ -7,12 +7,12 @@ defaults write com.apple.finder AppleShowAllFiles -bool true
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Brew install basics
-brew install gh yazi fzf ripgrep lazygit fish neovim tmux lua-language-server zoxide delta ffmpeg tree-sitter-cli node eza
+brew install gh yazi fzf fd ripgrep lazygit fish neovim tmux lua-language-server zoxide delta ffmpeg tree-sitter-cli node eza
 
 gh extension install dlvhdr/gh-dash
 
 # Desktop apps
-brew install --cask raycast vlc firefox kitty
+brew install --cask raycast vlc firefox kitty jackielii/tap/skhd-zig
 
 npm i -g elm serve @elm-tooling/elm-language-server
 
@@ -24,7 +24,7 @@ cd ~
 rm -rf dotfiles .config/nvim .config/fish .tmux.conf .config/kitty/kitty.conf .config/lazygit/config.yml
 git clone git@github.com:peterszerzo/dotfiles.git
 
-mkdir -p .config .config/kitty .config/lazygit
+mkdir -p .config .config/kitty .config/lazygit .config/skhd
 
 # Set up symlinks
 ln -sv ~/dotfiles/nvim ~/.config
@@ -33,6 +33,7 @@ ln -sv ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -sv ~/dotfiles/kitty.conf ~/.config/kitty/kitty.conf
 ln -sv ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
 ln -sv ~/dotfiles/lazygit/config.yml ~/Library/Application\ Support/lazygit/config.yml
+ln -sv ~/dotfiles/skhd/skhdrc ~/.config/skhd/skhdrc
 
 # Install fish plugins from fish_plugins (needs fisher, installed by new-machine.sh)
 fish -c 'fisher update'

@@ -6,7 +6,6 @@ return {
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
 	"tidalcycles/vim-tidal",
-	"BurntSushi/ripgrep",
 	{
 		"catgoose/nvim-colorizer.lua",
 		opts = {

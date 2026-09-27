@@ -1,0 +1,23 @@
+# skhd.zig config — https://github.com/jackielii/skhd.zig
+# Syntax reference: https://github.com/jackielii/skhd.zig/blob/main/SYNTAX.md
+
+.device builtin {
+  vendor:  0x0000,
+  product: 0x0000,
+}
+
+:: hyperlayer @
+
+.remap escape [device builtin] {
+    tap             : escape
+    hold            : hyperlayer
+    timeout         : 150ms
+    permissive_hold : on
+    retro_tap       : off
+}
+
+# --- Shortcuts -------------------------------------------------------------
+.define open_app : open -a "{{1}}"
+
+hyper - l      : @open_app("Microsoft Outlook")
+hyperlayer < l : @open_app("Microsoft Outlook")

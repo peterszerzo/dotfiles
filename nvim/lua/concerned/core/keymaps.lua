@@ -25,8 +25,8 @@ nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- dec
 
 vim.keymap.set({ "n" }, "<BS>", "<C-^>", { desc = "Previous file" })
 
-vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>")
-vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", "<Cmd>Gdiff<CR>")
+vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>", { desc = "Git browse" })
+vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", "<Cmd>Gdiff<CR>", { desc = "Git diff" })
 
 vim.keymap.set("n", "<Leader>ea", "<Cmd>e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
 vim.keymap.set("n", "<Leader>en", "<Cmd>e ~/Documents/NOTES.md<CR>", { desc = "Open notes" })

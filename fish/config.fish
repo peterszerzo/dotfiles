@@ -9,6 +9,7 @@ abbr --add keych 'ssh-add --apple-use-keychain ~/.ssh/id_ed25519'
 abbr --add ghprco 'gh pr checkout'
 abbr --add ghprl 'gh pr list'
 abbr --add ffs --set-cursor 'firefox --search "%"'
+abbr --add lg --set-cursor 'lazygit'
 
 # Get the origin of a GitHub PR - either by PR number or without an argument for the current PR
 function ghprog 
@@ -351,4 +352,3 @@ if test -f ~/.config/fish/local.fish
 end
 
 zoxide init fish | source
-fzf --fish | source

@@ -32,7 +32,6 @@ return {
 				{ name = "luasnip" },
 				{ name = "buffer" },
 				{ name = "path" },
-				{ name = "line" },
 			}),
 		})
 	end,
