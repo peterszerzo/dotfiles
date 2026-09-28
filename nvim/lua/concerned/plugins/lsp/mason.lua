@@ -1,5 +1,3 @@
--- Loaded on demand as a dependency of the lspconfig spec, plus on `:Mason`, so
--- startup no longer waits on the Mason registry.
 return {
 	"mason-org/mason.nvim",
 	cmd = { "Mason", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUpdate" },

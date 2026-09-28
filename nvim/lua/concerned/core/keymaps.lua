@@ -16,7 +16,11 @@ local restart_session = vim.fs.joinpath(vim.fn.stdpath("state"), "restart-sessio
 
 vim.keymap.set("n", "<Leader>t", function()
 	vim.cmd("mksession! " .. vim.fn.fnameescape(restart_session))
-	vim.cmd(("restart lua vim.cmd.source(%q) vim.fn.delete(%q)"):format(restart_session, restart_session))
+	-- `concerned.restart` is required by path rather than here, because the new
+	-- server can run this command before it has sourced init.lua. The config
+	-- directory is on the runtimepath from the very start, so the require works
+	-- either way.
+	vim.cmd(('restart lua require("concerned.restart").restore(%q)'):format(restart_session))
 end, { desc = "Restart Neovim while preserving buffers" })
 
 nvim_set_keymap("n", "<Leader><Leader>", "<Cmd>nohl<CR>", { desc = "Clear highlights" })

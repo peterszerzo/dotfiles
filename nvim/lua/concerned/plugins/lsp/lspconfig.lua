@@ -1,7 +1,3 @@
--- On 0.12 nvim-lspconfig is a data package: it ships the `lsp/<server>.lua`
--- definitions that core reads off the runtimepath, plus the `:Lsp*` commands.
--- Servers are described with `vim.lsp.config` and started with `vim.lsp.enable`,
--- so there is no `setup()` call left in here.
 return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
@@ -25,23 +21,13 @@ return {
 			"ts_ls",
 		}
 
-		-- Language servers are the usual reason a large file locks the editor up:
-		-- every keystroke ships a diff and semantic tokens re-highlight the buffer.
-		-- Past this size, go without.
 		local max_file_size = 512 * 1024
 
-		-- How many times to bring a crashed server back before giving up, so one
-		-- that dies on startup doesn't spin forever.
 		local max_restarts = 3
 
-		-- A server that ran at least this long before dying is treated as a one-off
-		-- rather than as part of a crash loop.
 		local crash_loop_window = 30 * 1000
 
 		vim.diagnostic.config({
-			-- The modern form of the old `sign_define` loop. Icons stay in the gutter
-			-- and the text is read on demand with <Leader>d, so diagnostics never
-			-- reflow the buffer while typing.
 			signs = {
 				text = {
 					[vim.diagnostic.severity.ERROR] = " ",
@@ -50,13 +36,8 @@ return {
 					[vim.diagnostic.severity.INFO] = " ",
 				},
 			},
-			-- Lead with the worst problem on a line instead of whichever arrived
-			-- first, in both the sign column and the float.
 			severity_sort = true,
 			float = { border = "rounded", source = true, header = "" },
-			-- ]d, [d, ]D and [D are core mappings on 0.12; this is what makes them
-			-- show the diagnostic they land on. `wrap` is restated because this table
-			-- replaces the default one rather than merging into it.
 			jump = { float = true, wrap = true },
 		})
 
@@ -164,16 +145,6 @@ return {
 		end
 		pcall(vim.keymap.del, "x", "gra")
 
-		-- 0.12 renders server-reported colours itself, which covers tailwind class
-		-- names that nvim-colorizer cannot resolve. `virtual` leaves treesitter's
-		-- highlighting alone and puts a swatch beside the value instead. Both of
-		-- these install their own capability-guarded LspAttach handlers, so they only
-		-- cost anything for servers that actually implement the request.
-		vim.lsp.document_color.enable(true, nil, { style = "virtual" })
-
-		-- Editing an opening tag updates the closing one, for html and svelte.
-		vim.lsp.linked_editing_range.enable(true)
-
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("concerned_lsp_attach", {}),
 			callback = function(ev)
@@ -210,6 +181,14 @@ return {
 				map("n", "<Leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", "Show buffer diagnostics")
 			end,
 		})
+
+		-- Shows the color a value resolves to, for tailwindcss and cssls. "virtual"
+		-- keeps it in virtual text instead of recolouring the token itself, which
+		-- would fight with treesitter over the highlight.
+		vim.lsp.document_color.enable(true, nil, { style = "virtual" })
+
+		-- Renaming a JSX/HTML open tag rewrites the closing tag as you type.
+		vim.lsp.linked_editing_range.enable(true)
 
 		vim.lsp.enable(servers)
 	end,
