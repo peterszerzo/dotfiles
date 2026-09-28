@@ -1,19 +1,17 @@
+-- Loaded on demand as a dependency of the lspconfig spec, plus on `:Mason`, so
+-- startup no longer waits on the Mason registry.
 return {
 	"mason-org/mason.nvim",
+	cmd = { "Mason", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUpdate" },
 	dependencies = {
 		"mason-org/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 	},
 	config = function()
-		-- import mason
 		local mason = require("mason")
-
-		-- import mason-lspconfig
 		local mason_lspconfig = require("mason-lspconfig")
-
 		local mason_tool_installer = require("mason-tool-installer")
 
-		-- enable mason and configure icons
 		mason.setup({
 			ui = {
 				icons = {
@@ -35,6 +33,10 @@ return {
 				"svelte",
 				"lua_ls",
 			},
+			-- lsp/lspconfig.lua calls `vim.lsp.enable` with its own list. Letting Mason
+			-- also enable everything it finds installed would start servers that are
+			-- no longer wanted, and would race with the config being set up there.
+			automatic_enable = false,
 		})
 
 		mason_tool_installer.setup({
@@ -44,5 +46,12 @@ return {
 				"eslint_d",
 			},
 		})
+
+		-- mason-tool-installer kicks off its install check from a VimEnter autocmd.
+		-- Loading lazily means that event has already fired, so nothing would ever
+		-- install; do it by hand instead.
+		if vim.v.vim_did_enter == 1 then
+			mason_tool_installer.check_install(false)
+		end
 	end,
 }

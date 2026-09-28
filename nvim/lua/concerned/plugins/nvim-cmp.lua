@@ -28,6 +28,9 @@ return {
 				["<C-e>"] = cmp.mapping.abort(),
 			},
 			sources = cmp.config.sources({
+				-- group_index 0 lets lazydev's `require` path completions replace
+				-- lua_ls's, which lists every module in the workspace
+				{ name = "lazydev", group_index = 0 },
 				{ name = "nvim_lsp" },
 				{ name = "luasnip" },
 				{ name = "buffer" },
