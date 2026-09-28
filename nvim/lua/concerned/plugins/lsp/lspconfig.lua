@@ -2,24 +2,13 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
+		"saghen/blink.cmp",
 		-- Mason's `setup()` is what puts the installed server binaries on PATH, and
 		-- servers start as soon as the config below runs, so it has to load first.
 		"mason-org/mason.nvim",
 	},
 	config = function()
-		-- Listed explicitly instead of being derived from whatever Mason happens to
-		-- have installed: one list to read, and a server left behind by an old
-		-- experiment can't quietly keep attaching to buffers.
-		local servers = {
-			"cssls",
-			"elmls",
-			"html",
-			"lua_ls",
-			"svelte",
-			"tailwindcss",
-			"ts_ls",
-		}
+		local servers = require("concerned.lsp-servers")
 
 		local max_file_size = 512 * 1024
 
@@ -37,7 +26,8 @@ return {
 				},
 			},
 			severity_sort = true,
-			float = { border = "rounded", source = true, header = "" },
+			-- No `border` here: 'winborder' supplies it for every float at once.
+			float = { source = true, header = "" },
 			jump = { float = true, wrap = true },
 		})
 
@@ -45,7 +35,7 @@ return {
 		local crashes = {}
 
 		vim.lsp.config("*", {
-			capabilities = require("cmp_nvim_lsp").default_capabilities(),
+			capabilities = require("blink.cmp").get_lsp_capabilities(),
 
 			-- Only consulted for servers whose own definition sets no root markers:
 			-- anchors them at the repository rather than at nvim's working directory.

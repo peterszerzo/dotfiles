@@ -15,6 +15,9 @@ require("lazy").setup({ { import = "concerned.plugins" }, { import = "concerned.
 	checker = {
 		enabled = true,
 		notify = false,
+		-- Default is hourly, which means a `git ls-remote` per plugin on most
+		-- launches. Weekly still surfaces updates without the per-launch fetch.
+		frequency = 604800,
 	},
 	change_detection = {
 		notify = false,

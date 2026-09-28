@@ -6,6 +6,8 @@ opt.autoread = true
 opt.backspace = "indent,eol,start"
 opt.clipboard = "unnamedplus"
 opt.colorcolumn = "120"
+-- Prompt to save on :q rather than failing with "No write since last change"
+opt.confirm = true
 opt.cursorline = true
 opt.expandtab = true
 opt.foldenable = true
@@ -15,16 +17,32 @@ opt.foldlevel = 99
 opt.ignorecase = true
 opt.inccommand = "split"
 opt.incsearch = true
+-- "view" restores the scroll position when jumping back, not just the cursor line
+opt.jumpoptions = "stack,view"
+opt.list = true
+opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.number = true
+opt.pumheight = 12
 opt.relativenumber = true
 opt.scrolloff = 4
 opt.shiftwidth = 2
 opt.smartcase = true
 opt.smarttab = true
 opt.softtabstop = 2
+opt.splitbelow = true
+opt.splitright = true
 opt.swapfile = false
 opt.tabstop = 2
 opt.termguicolors = true
+-- Undo history outlives the buffer. Worth more here than usual, since there is
+-- no swapfile to fall back on. Written under stdpath("state")/undo.
+opt.undofile = true
+-- The default 4s makes anything driven off CursorHold -- gitsigns' line blame,
+-- treesitter-context -- feel broken rather than deliberate.
+opt.updatetime = 250
+-- Applies to every float that does not ask for a border of its own: LSP hover,
+-- diagnostics, which-key, telescope's previewer.
+opt.winborder = "rounded"
 opt.wrap = false
 opt.signcolumn = "yes:1"
 
