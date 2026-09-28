@@ -5,13 +5,13 @@ return {
 	"tpope/vim-abolish",
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
-	"tidalcycles/vim-tidal",
 	{
-		"catgoose/nvim-colorizer.lua",
-		-- Same list as `filetypes` below: it has nothing to attach to elsewhere.
-		ft = { "css", "javascript", "typescript", "typescriptreact" },
-		opts = {
-			filetypes = { "css", "javascript", "typescript", "typescriptreact" },
-		},
+		"tidalcycles/vim-tidal",
+		ft = "tidal",
+		-- The filetype has to be detectable before lazy's FileType trigger can fire,
+		-- and the plugin's own ftdetect is not on the runtimepath until it loads.
+		init = function()
+			vim.filetype.add({ extension = { tidal = "tidal" } })
+		end,
 	},
 }

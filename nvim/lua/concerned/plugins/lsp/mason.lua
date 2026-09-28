@@ -21,19 +21,12 @@ return {
 		})
 
 		mason_lspconfig.setup({
-			-- list of servers for mason to install
-			ensure_installed = {
-				"ts_ls",
-				"html",
-				"cssls",
-				"elmls",
-				"tailwindcss",
-				"svelte",
-				"lua_ls",
-			},
-			-- lsp/lspconfig.lua calls `vim.lsp.enable` with its own list. Letting Mason
-			-- also enable everything it finds installed would start servers that are
-			-- no longer wanted, and would race with the config being set up there.
+			-- Copied, not passed through: lsp/lspconfig.lua holds the same table, and
+			-- mason-lspconfig is free to sort or otherwise rework what it is handed.
+			ensure_installed = vim.deepcopy(require("concerned.lsp-servers")),
+			-- lsp/lspconfig.lua calls `vim.lsp.enable` with that same list. Letting
+			-- Mason also enable everything it finds installed would start servers that
+			-- are no longer wanted, and would race with the config being set up there.
 			automatic_enable = false,
 		})
 

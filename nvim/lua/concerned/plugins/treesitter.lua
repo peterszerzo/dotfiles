@@ -1,14 +1,21 @@
 -- Parsers to keep installed. Installing is a no-op when they are already present.
 local parsers = {
+	"bash",
 	"css",
+	"diff",
 	"elm",
 	"fish",
+	"git_rebase",
+	"gitcommit",
 	"html",
 	"javascript",
 	"json",
 	"lua",
 	"markdown",
 	"markdown_inline",
+	-- For editing treesitter queries themselves
+	"query",
+	"toml",
 	"tsx",
 	"typescript",
 	"vim",
