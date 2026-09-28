@@ -1,14 +1,15 @@
-local nvim_set_keymap = vim.api.nvim_set_keymap
-
 vim.g.mapleader = " "
 
-nvim_set_keymap("i", "jk", "<Esc>", { desc = "Escape" })
+-- vim.keymap.set throughout rather than vim.api.nvim_set_keymap: the low-level
+-- API leaves mappings remappable by default, so a plugin that later maps <C-a>
+-- would change what <Leader>+ does.
+vim.keymap.set("i", "jk", "<Esc>", { desc = "Escape" })
 -- Remap the uppercase version as well, in case caps lock or caps word is on
-nvim_set_keymap("i", "JK", "<Esc>", { desc = "Escape" })
-nvim_set_keymap("n", "<Leader>q", "<Cmd>q!<CR>", { desc = "Exit without saving" })
+vim.keymap.set("i", "JK", "<Esc>", { desc = "Escape" })
+vim.keymap.set("n", "<Leader>q", "<Cmd>q!<CR>", { desc = "Exit without saving" })
 -- <Cmd> runs the command without entering command-line mode, so nothing flashes
 -- in the cmdline on the way through
-nvim_set_keymap("n", "<Leader>s", "<Cmd>w<CR>", { desc = "Save" })
+vim.keymap.set("n", "<Leader>s", "<Cmd>w<CR>", { desc = "Save" })
 -- Restart, keeping the current buffers/windows/tabs. `:restart` accepts a
 -- command to run on the new server (`:h :restart`), so we write a session file
 -- first, then source and delete it once the new server is up.
@@ -23,17 +24,30 @@ vim.keymap.set("n", "<Leader>t", function()
 	vim.cmd(('restart lua require("concerned.restart").restore(%q)'):format(restart_session))
 end, { desc = "Restart Neovim while preserving buffers" })
 
-nvim_set_keymap("n", "<Leader><Leader>", "<Cmd>nohl<CR>", { desc = "Clear highlights" })
-nvim_set_keymap("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
-nvim_set_keymap("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
+vim.keymap.set("n", "<Leader><Leader>", "<Cmd>nohl<CR>", { desc = "Clear highlights" })
+vim.keymap.set("n", "<Leader>+", "<C-a>", { desc = "Increment number" }) -- increment
+vim.keymap.set("n", "<Leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
 vim.keymap.set({ "n" }, "<BS>", "<C-^>", { desc = "Previous file" })
 
-vim.keymap.set({ "n", "v", "l" }, "<Leader>gb", ":GBrowse!<CR>", { desc = "Git browse" })
-vim.keymap.set({ "n", "v", "l" }, "<Leader>gd", "<Cmd>Gdiff<CR>", { desc = "Git diff" })
+vim.keymap.set({ "n", "x" }, "<Leader>gb", ":GBrowse!<CR>", { desc = "Git browse" })
+vim.keymap.set({ "n", "x" }, "<Leader>gd", "<Cmd>Gdiff<CR>", { desc = "Git diff" })
 
 vim.keymap.set("n", "<Leader>ea", "<Cmd>e ~/Documents/AGENDA.md<CR>", { desc = "Open agenda" })
 vim.keymap.set("n", "<Leader>en", "<Cmd>e ~/Documents/NOTES.md<CR>", { desc = "Open notes" })
+
+-- Keep the selection after indenting, so a block can be nudged over repeatedly
+-- without reselecting it each time
+vim.keymap.set("x", ">", ">gv", { desc = "Indent and keep selection" })
+vim.keymap.set("x", "<", "<gv", { desc = "Dedent and keep selection" })
+
+-- Centre the match and open just enough folds to see it
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search match" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search match" })
+
+-- Single <Esc> belongs to whatever is running in the terminal (lazygit and yazi
+-- both use it), so it takes two to get back to normal mode.
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- Wrap inner word or visual selection in a markdown link tag
 vim.api.nvim_create_autocmd("FileType", {
@@ -50,23 +64,6 @@ vim.api.nvim_create_autocmd("FileType", {
 		})
 	end,
 })
-
-vim.api.nvim_create_user_command("Format", function()
-	local ft = vim.bo.filetype
-	if ft == "elm" then
-		vim.cmd("!elm-format % --yes")
-	elseif
-		ft == "javascript"
-		or ft == "typescript"
-		or ft == "typescriptreact"
-		or ft == "html"
-		or ft == "json"
-		or ft == "markdown"
-		or ft == "css"
-	then
-		vim.cmd("!prettier % --write")
-	end
-end, {})
 
 -- Get the current file path relative to the working directory
 -- Falls back to the absolute path when the file lives outside of cwd

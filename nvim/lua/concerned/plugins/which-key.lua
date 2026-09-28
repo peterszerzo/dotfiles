@@ -6,8 +6,17 @@ return {
 		vim.o.timeoutlen = 500
 	end,
 	opts = {
-		-- your configuration comes here
-		-- or leave it empty to use the default settings
-		-- refer to the configuration section below
+		-- Names for the leader prefixes, so the popup reads as a menu instead of a
+		-- flat list of every key that happens to start with <Leader>g
+		spec = {
+			{ "<Leader>e", group = "edit/open" },
+			{ "<Leader>g", group = "git" },
+			{ "<Leader>h", group = "hunks" },
+			{ "<Leader>l", group = "links/lists" },
+			{ "<Leader>n", group = "numbering" },
+			{ "<Leader>o", group = "github (octo)" },
+			{ "<Leader>x", group = "diagnostics (trouble)" },
+			{ "gs", group = "exchange" },
+		},
 	},
 }

@@ -7,9 +7,21 @@ return {
 
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<Leader>f", function()
-			builtin.find_files({ hidden = true, file_ignore_patterns = { "^%.git/" } })
+			-- Unanchored pattern: "^%.git/" only matched the repository's own .git,
+			-- letting submodule ones through.
+			builtin.find_files({ hidden = true, file_ignore_patterns = { "%.git/" } })
 		end, { desc = "Search files" })
 		vim.keymap.set("n", "<Leader>/", builtin.live_grep, { desc = "Live grep" })
+		vim.keymap.set("n", "<Leader>,", builtin.buffers, { desc = "Search buffers" })
+		-- Reopens the last picker with its query and cursor position intact, which is
+		-- what you want after a live_grep, jumping to a result, and wanting the next
+		vim.keymap.set("n", "<Leader>.", builtin.resume, { desc = "Resume last picker" })
+		vim.keymap.set("n", "<Leader>*", builtin.grep_string, { desc = "Grep word under cursor" })
+		vim.keymap.set("x", "<Leader>*", function()
+			-- getregion reads the selection directly, so no register gets clobbered
+			local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
+			builtin.grep_string({ search = table.concat(lines, "\n") })
+		end, { desc = "Grep selection" })
 		vim.keymap.set("n", "<Leader>b", builtin.git_branches, { desc = "Search branches" })
 		vim.keymap.set("n", "<Leader>;", function()
 			builtin.command_history({
