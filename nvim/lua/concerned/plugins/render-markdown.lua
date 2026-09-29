@@ -1,6 +1,3 @@
--- In-buffer markdown rendering: styled headings, bullet and checkbox icons,
--- code block backgrounds, tables and callouts. The line under the cursor is
--- left as raw text, so editing still happens on the real characters.
 return {
 	"MeanderingProgrammer/render-markdown.nvim",
 	ft = { "markdown" },
