@@ -1,28 +1,9 @@
 -- Telescope picker over the CRUX code reviews (code.amazon.com) that are open
 -- on the Brazil package in the current git repository.
 --
--- Two internal endpoints back this, both authenticated with the Midway cookie
--- jar that `mwinit` writes:
---   * the CRUX dashboard API, for the list of open reviews on a package
---   * the Code Browser review page in its JSON form, for the detail in the
---     preview (title, description, approvals, analyzers, ...)
---
--- Requires the Builder Toolbox and a current Midway session; both are reported
--- as errors when the picker is opened rather than gated out of existence.
---
---   require("concerned.crux").reviews()   -- also :CodeReviews [Package]
---
--- Everything the user is asked is a telescope picker, so <Esc> and <C-c> close
--- it and choose nothing throughout, and nothing is opened until after the
--- picker it was chosen from has finished closing. A detail fetch still in flight
--- when a picker goes away simply writes nowhere: the preview checks its buffer
--- is still valid, and `payload_cache` keeps the answer for next time. Declining
--- the approval confirmation leaves the review untouched — nothing is sent until
--- the "Yes" line is chosen.
---
--- What there is to do with a review is the picker's own mappings rather than a
--- menu of its own, so the preview stays up while you act and the list survives
--- the ones that only copy or open something. <C-/> lists them.
+-- There are two things to do with the review under the cursor: <CR> checks it
+-- out with `cr-pull`, and <C-o> hands it to `cruxi`. Both are read-only on the
+-- review itself — nothing here writes to CRUX.
 
 local M = {}
 
@@ -39,60 +20,6 @@ local function notify(msg, level)
 	vim.notify(msg, level or vim.log.levels.INFO, { title = "CRUX" })
 end
 
---- Pick one of `labels`, as a telescope picker in the middle of the screen
---- rather than the `vim.ui.select` default: the lines are moved between with
---- <C-n>/<C-p> and narrowed by typing, instead of being read off by number.
---- <Esc> and <C-c> are telescope's own close mappings and choose nothing.
-local function select_one(labels, opts, on_choice)
-	local pickers = require("telescope.pickers")
-	local finders = require("telescope.finders")
-	local conf = require("telescope.config").values
-	local actions = require("telescope.actions")
-	local action_state = require("telescope.actions.state")
-	local themes = require("telescope.themes")
-
-	-- Wide enough for the longest line and tall enough for all of them: menus
-	-- this short should never need scrolling. The center layout counts the prompt
-	-- and the three border rows in its height, and the caret in its width.
-	local width = #(opts.prompt or "")
-	for _, label in ipairs(labels) do
-		width = math.max(width, #label)
-	end
-
-	pickers
-		.new(
-			themes.get_dropdown({
-				layout_config = { width = width + 6, height = #labels + 4 },
-			}),
-			{
-				-- The prompts here read as a question or a label, which the border
-				-- title already punctuates
-				prompt_title = (opts.prompt or "Select one"):gsub("[:%s]+$", ""),
-				finder = finders.new_table({ results = labels }),
-				sorter = conf.generic_sorter({}),
-				attach_mappings = function(prompt_bufnr)
-					actions.select_default:replace(function()
-						-- Nothing is selected when the prompt matches no line
-						local entry = action_state.get_selected_entry()
-						actions.close(prompt_bufnr)
-						if entry then
-							-- Let the close finish first: some of these open a
-							-- window, or another menu, of their own
-							vim.schedule(function()
-								on_choice(entry[1])
-							end)
-						end
-					end)
-					return true
-				end,
-			}
-		)
-		:find()
-end
-
---- What is missing before any of this can work, as a message to show the user.
---- Both of these are otherwise only discoverable as a failing curl or a command
---- that is not there.
 local function unmet_requirement()
 	if not vim.uv.fs_stat(TOOLBOX) then
 		return "Builder Toolbox is not installed — this only works on an Amazon machine"
@@ -103,10 +30,7 @@ local function unmet_requirement()
 	return nil
 end
 
--- Fetch JSON with the Midway cookie. `-u:` gets curl to send credentials on the
--- redirect through midway-auth; we deliberately leave out `-c` because several
--- of these can be in flight at once and we'd rather not have them race to
--- rewrite the user's cookie jar.
+-- Fetch JSON with the Midway cookie
 local function fetch_json(url, on_done)
 	local cmd = {
 		"curl",
@@ -498,21 +422,66 @@ local function render_detail(payload)
 	return lines
 end
 
---- Put the same lines the preview shows into a throwaway buffer, where they can
---- be read at full width, searched and yanked from. It takes over the window the
---- menu was called from, so `q` puts the previous buffer back rather than
---- closing a window the user did not ask for.
-local function open_detail_buffer(cr, lines)
-	local bufnr = vim.api.nvim_create_buf(false, true)
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-	-- A name makes the buffer findable, but a stale wiped one may still hold it
-	pcall(vim.api.nvim_buf_set_name, bufnr, "crux://" .. cr)
-	vim.bo[bufnr].filetype = "markdown"
-	vim.bo[bufnr].modifiable = false
-	vim.bo[bufnr].bufhidden = "wipe"
-	vim.keymap.set("n", "q", "<Cmd>bdelete<CR>", { buffer = bufnr, desc = "Close review details" })
+-- cruxi asks the terminal what it can do before it draws anything, and waits for
+-- the answers: the background colour (OSC 11), the cell size in pixels (CSI 16t),
+-- synchronized output and the two keyboard protocols. Nvim's built-in terminal
+-- answers none of those, so cruxi sits on a blank screen until a keypress shakes
+-- it loose. Answering on its behalf is what gets the first frame drawn — the
+-- values are a plausible modern terminal rather than this one, which only the
+-- pixel-exact features nothing here uses would notice.
+local CAPABILITY_REPLIES = table.concat({
+	"\27]11;rgb:1e1e/1e1e/1e1e\27\\", -- OSC 11: background colour
+	"\27[6;20;10t", -- CSI 16t: cell size, 10x20 pixels
+	"\27[?2026;2$y", -- DECRPM: synchronized output understood, currently off
+	"\27[?2027;0$y", -- DECRPM: grapheme clustering not recognised
+	"\27[>4;1m", -- modifyOtherKeys level 1
+	"\27[?0u", -- Kitty keyboard protocol, no flags set
+})
 
-	vim.api.nvim_win_set_buf(0, bufnr)
+--- Hand the review over to `cruxi`, the CRUX terminal UI, in a floating terminal:
+--- everything the preview only summarises is there, and can be acted on. The
+--- float goes over whatever was on screen rather than taking a window away from
+--- it, and closes again once cruxi exits.
+local function open_review_terminal(cr, cwd)
+	local width = math.min(vim.o.columns - 4, 160)
+	local height = math.max(vim.o.lines - 6, 10)
+	local bufnr = vim.api.nvim_create_buf(false, true)
+
+	local win = vim.api.nvim_open_win(bufnr, true, {
+		relative = "editor",
+		width = width,
+		height = height,
+		row = math.floor((vim.o.lines - height) / 2) - 1,
+		col = math.floor((vim.o.columns - width) / 2),
+		style = "minimal",
+		border = "rounded",
+		title = " " .. cr .. " ",
+		title_pos = "center",
+	})
+
+	local chan = vim.fn.jobstart({ "cruxi", cr }, {
+		term = true,
+		cwd = cwd,
+		on_exit = function()
+			-- The window may already be gone, closed out from under the job
+			if vim.api.nvim_win_is_valid(win) then
+				vim.api.nvim_win_close(win, true)
+			end
+		end,
+	})
+
+	-- Which query cruxi is waiting on, and whether it is reading yet, is not
+	-- something we can see from here, so answer a few times over the first second
+	-- and a half. A repeat that arrives after the frame is up is a response to a
+	-- question nobody asked, which cruxi discards.
+	for _, delay in ipairs({ 150, 600, 1500 }) do
+		vim.defer_fn(function()
+			pcall(vim.fn.chansend, chan, CAPABILITY_REPLIES)
+		end, delay)
+	end
+	-- Closing the float should end the session rather than leave it hidden
+	vim.bo[bufnr].bufhidden = "wipe"
+	vim.cmd.startinsert()
 end
 
 --- The review page payload, from the cache when it is there and over the
@@ -536,169 +505,21 @@ local function with_payload(cr, on_payload, on_wait)
 	end)
 end
 
---- Approve the latest revision of a review. CRUX only takes this over its web
---- routes, which want the CSRF token from the review page and the session
---- cookie that token was issued against — hence the throwaway jar, which keeps
---- these writes away from the Midway jar the read paths share.
-local function approve(cr, revision)
-	local jar = vim.fn.tempname()
-	local page = REVIEW_URL .. cr .. "/revisions/" .. revision
-
-	local function done(msg, level)
-		os.remove(jar)
-		notify(msg, level)
-	end
-
-	notify("Approving " .. cr .. " revision " .. revision .. "...")
-	vim.system({
-		"curl",
-		"-sS",
-		"-L",
-		"--location-trusted",
-		"-u",
-		":",
-		"-b",
-		COOKIE,
-		"-c",
-		jar,
-		page,
-	}, { text = true }, function(res)
-		local html = res.stdout or ""
-		local token = html:match('name="csrf%-token"[^>]-content="([^"]+)"')
-			or html:match('content="([^"]+)"[^>]-name="csrf%-token"')
-		if not token then
-			return vim.schedule(function()
-				done("Could not read a CSRF token from " .. page, vim.log.levels.ERROR)
-			end)
-		end
-
-		vim.system({
-			"curl",
-			"-sS",
-			"-L",
-			"--location-trusted",
-			"-u",
-			":",
-			"-b",
-			jar,
-			"-X",
-			"POST",
-			"-H",
-			"X-CSRF-Token: " .. token,
-			"-H",
-			"Accept: application/json",
-			"-o",
-			"/dev/null",
-			"-w",
-			"%{http_code}",
-			page .. "/approve",
-		}, { text = true }, function(post)
-			vim.schedule(function()
-				local code = vim.trim(post.stdout or "")
-				if code ~= "200" then
-					return done(("Could not approve %s (HTTP %s)"):format(cr, code), vim.log.levels.ERROR)
-				end
-				-- The cached payload now has a stale approval map
-				payload_cache[cr] = nil
-				done("✅ Approved " .. cr .. " revision " .. revision)
-			end)
-		end)
-	end)
-end
-
---- Ask before approving, since it is the one action here that other people see.
-local function confirm_approval(cr)
-	with_payload(cr, function(payload, err)
-		if err then
-			return notify(err, vim.log.levels.ERROR)
-		end
-
-		local revision = (((payload.revision or {}).cr_revision or {}).id or {}).review_revision_id or {}
-		revision = revision.revision
-		if not revision then
-			return notify("Could not tell which revision of " .. cr .. " to approve", vim.log.levels.ERROR)
-		end
-
-		local yes = ("Yes, approve revision %s"):format(revision)
-		select_one({ "Cancel", yes }, {
-			prompt = ("Approve %s?"):format(cr),
-		}, function(choice)
-			if choice == yes then
-				approve(cr, revision)
-			else
-				notify(cr .. " not approved")
-			end
-		end)
-	end, function()
-		notify("Loading " .. cr .. "...")
-	end)
-end
-
---- Bind the things worth doing with a review to the reviews picker itself. Every
---- mapping carries a `desc`, which is what <C-/> reads its list out of, so these
---- are as nameable as the menu they replaced.
 local function attach_actions(prompt_bufnr, map, cwd)
 	local actions = require("telescope.actions")
 	local action_state = require("telescope.actions.state")
 
-	--- Act on the review under the cursor, leaving the picker up. Nothing is
-	--- selected when the prompt matches no review.
-	local function on_review(fn)
+	local function instead_of_picker(fn)
 		return function()
 			local entry = action_state.get_selected_entry()
-			if entry then
-				fn(entry.cr)
+			if not entry then
+				return
 			end
-		end
-	end
-
-	--- The same, for the ones that want a window or a prompt of their own: the
-	--- picker is closed first and they run once it has finished going away.
-	local function instead_of_picker(fn)
-		return on_review(function(cr)
 			actions.close(prompt_bufnr)
 			vim.schedule(function()
-				fn(cr)
+				fn(entry.cr)
 			end)
-		end)
-	end
-
-	--- Report something that happened without the picker going anywhere. A plain
-	--- `vim.notify` lands on the cmdline, which is a line you are not looking at
-	--- while the picker has your attention and which telescope redraws over on the
-	--- next keystroke, so put it in the prompt's own title for a moment too. Still
-	--- notified as well, to leave the text in `:messages`.
-	local flashes = 0
-	local function say(message)
-		notify(message)
-
-		local picker = action_state.get_current_picker(prompt_bufnr)
-		local border = picker and picker.layout.prompt and picker.layout.prompt.border
-		if not border then
-			return
 		end
-
-		flashes = flashes + 1
-		local flash = flashes
-		border:change_title(message)
-		vim.defer_fn(function()
-			-- The picker may be gone, or a later message may have taken the title
-			-- over, in which case that one owns putting it back
-			if flash == flashes and vim.api.nvim_buf_is_valid(prompt_bufnr) then
-				border:change_title(picker.prompt_title)
-			end
-		end, 1000)
-	end
-
-	local function view_details(cr)
-		with_payload(cr, function(payload, err)
-			if err then
-				return notify(err, vim.log.levels.ERROR)
-			end
-			open_detail_buffer(cr, render_detail(payload))
-		end, function()
-			notify("Loading " .. cr .. "...")
-		end)
 	end
 
 	-- Checking out is the one worth reaching for without looking
@@ -710,34 +531,16 @@ local function attach_actions(prompt_bufnr, map, cwd)
 		vim.cmd.startinsert()
 	end))
 
-	map({ "i", "n" }, "<C-o>", instead_of_picker(view_details), { desc = "View details in a buffer" })
-
-	-- These three leave the list and the prompt alone, which is most of the reason
-	-- to bind them: you can copy or open three reviews in a row
-	map({ "i", "n" }, "<C-b>", on_review(function(cr)
-		vim.ui.open(REVIEW_URL .. cr)
-		say("Opened " .. cr .. " in the browser")
-	end), { desc = "Open in browser" })
-
-	map({ "i", "n" }, "<C-y>", on_review(function(cr)
-		vim.fn.setreg("+", REVIEW_URL .. cr)
-		say("Copied " .. REVIEW_URL .. cr)
-	end), { desc = "Copy CR URL" })
-
-	map({ "i", "n" }, "<C-e>", on_review(function(cr)
-		vim.fn.setreg("+", cr)
-		say("Copied " .. cr)
-	end), { desc = "Copy CR ID" })
-
-	-- Approve is the only one of these other people see, so it wants a key that is
-	-- nowhere near <CR> — the confirmation is what actually guards it.
-	--
-	-- <C-g> rather than the <C-a> this asks for because tmux holds that as its
-	-- prefix, and no <M-…> because kitty leaves macos_option_as_alt off, so Option
-	-- composes a character instead of sending a modifier. That leaves the keys
-	-- telescope has not already taken for movement, preview scrolling, splits and
-	-- the quickfix list: <C-b>, <C-e>, <C-g>, <C-o> and <C-y>.
-	map({ "i", "n" }, "<C-g>", instead_of_picker(confirm_approval), { desc = "Approve" })
+	-- <C-o> for "open", and one of the few keys telescope has not already taken for
+	-- movement, preview scrolling, splits and the quickfix list
+	map(
+		{ "i", "n" },
+		"<C-o>",
+		instead_of_picker(function(cr)
+			open_review_terminal(cr, cwd)
+		end),
+		{ desc = "Open in cruxi" }
+	)
 end
 
 local function open_picker(package, cwd, reviews, current)
@@ -837,8 +640,6 @@ function M.reviews(package)
 		package = nil
 	end
 
-	-- The working directory, not the open file: with a file from elsewhere on
-	-- screen the package you are working in is still the one you want.
 	local cwd = vim.fn.getcwd()
 
 	local root = cwd

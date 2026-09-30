@@ -177,9 +177,6 @@ return {
 		-- would fight with treesitter over the highlight.
 		vim.lsp.document_color.enable(true, nil, { style = "virtual" })
 
-		-- Renaming a JSX/HTML open tag rewrites the closing tag as you type.
-		vim.lsp.linked_editing_range.enable(true)
-
 		vim.lsp.enable(servers)
 	end,
 }
