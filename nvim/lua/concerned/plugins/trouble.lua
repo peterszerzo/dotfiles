@@ -13,22 +13,29 @@ return {
 	cmd = "Trouble",
 	keys = {
 		{
-			"<Leader>xw",
-			"<cmd>Trouble diagnostics toggle<CR>",
-			desc = "Open trouble workspace diagnostics",
+			"<leader>xx",
+			"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+			desc = "Buffer Diagnostics (Trouble)",
 		},
 		{
-			"<Leader>xd",
-			"<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
-			desc = "Open trouble document diagnostics",
+			"<leader>xX",
+			"<cmd>Trouble diagnostics toggle<cr>",
+			desc = "Diagnostics (Trouble)",
 		},
-		{ "<Leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
-		{ "<Leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
-		{ "<Leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
 		{
-			"<Leader>xs",
-			"<cmd>Trouble symbols toggle<CR>",
-			desc = "Open symbols in trouble",
+			"<leader>xs",
+			"<cmd>Trouble symbols toggle focus=false<cr>",
+			desc = "Symbols (Trouble)",
+		},
+		{
+			"<leader>xd",
+			"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+			desc = "LSP Definitions / references / ... (Trouble)",
+		},
+		{
+			"<leader>xq",
+			"<cmd>Trouble qflist toggle<cr>",
+			desc = "Quickfix List (Trouble)",
 		},
 	},
 }

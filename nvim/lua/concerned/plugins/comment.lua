@@ -1,15 +1,13 @@
--- Commenting itself is built in since Neovim 0.10: gc as an operator, gcc for a
--- line, gb/gbc for blockwise. Comment.nvim used to provide those and was
--- shadowing the builtins; all that is still worth having is the treesitter part,
--- which picks the right commentstring inside embedded languages -- {/* */} in
--- JSX markup but // in the surrounding TypeScript, and the same for svelte and
+-- nvim-ts-context-commentstring picks the commentstring for the language under
+-- the cursor rather than the one for the file, so a comment in JSX markup is
+-- {/* */} while the surrounding TypeScript gets //, and the same for svelte and
 -- html.
 --
--- Built-in gc reads 'commentstring' at the moment the operator runs, so the
--- value has to be computed then rather than set once per buffer. Hooking
--- vim.filetype.get_option is how nvim-ts-context-commentstring documents doing
--- that; enable_autocmd = false turns off its own buffer-local mechanism, which
--- would otherwise fight with this one.
+-- gc reads 'commentstring' at the moment the operator runs, so the value has to
+-- be computed then rather than set once per buffer. Hooking
+-- vim.filetype.get_option is how the plugin documents doing that;
+-- enable_autocmd = false turns off its own buffer-local mechanism, which would
+-- otherwise fight with this one.
 return {
 	"JoosepAlviste/nvim-ts-context-commentstring",
 	event = { "BufReadPre", "BufNewFile" },

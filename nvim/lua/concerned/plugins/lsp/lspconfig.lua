@@ -27,7 +27,11 @@ return {
 			},
 			severity_sort = true,
 			-- No `border` here: 'winborder' supplies it for every float at once.
-			float = { source = true, header = "" },
+			-- `focus` is what makes a second <Leader>d step into the float rather
+			-- than stack a duplicate on top of it, so long errors can be scrolled
+			-- with normal motions and dismissed with `q`. Diagnostic jumps pass
+			-- `focus = false` explicitly, so they keep ignoring this.
+			float = { source = true, header = "", focus = true },
 			jump = { float = true, wrap = true },
 		})
 

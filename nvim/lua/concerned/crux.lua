@@ -1,8 +1,8 @@
 -- Telescope picker over the CRUX code reviews (code.amazon.com) that are open
 -- on the Brazil package in the current git repository.
 --
--- There are two things to do with the review under the cursor: <CR> checks it
--- out with `cr-pull`, and <C-o> hands it to `cruxi`. Both are read-only on the
+-- There are two things to do with the review under the cursor: <CR> hands it to
+-- `cruxi`, and <C-o> checks it out with `cr-pull`. Both are read-only on the
 -- review itself — nothing here writes to CRUX.
 
 local M = {}
@@ -441,8 +441,8 @@ local CAPABILITY_REPLIES = table.concat({
 --- Hand the review over to `cruxi`, the CRUX terminal UI, in a floating terminal:
 --- everything the preview only summarises is there, and can be acted on. The
 --- float goes over whatever was on screen rather than taking a window away from
---- it, and closes again once cruxi exits.
-local function open_review_terminal(cr, cwd)
+--- it, and closes again once cruxi exits, running `on_exit` after it has.
+local function open_review_terminal(cr, cwd, on_exit)
 	local width = math.min(vim.o.columns - 4, 160)
 	local height = math.max(vim.o.lines - 6, 10)
 	local bufnr = vim.api.nvim_create_buf(false, true)
@@ -466,6 +466,9 @@ local function open_review_terminal(cr, cwd)
 			-- The window may already be gone, closed out from under the job
 			if vim.api.nvim_win_is_valid(win) then
 				vim.api.nvim_win_close(win, true)
+			end
+			if on_exit then
+				vim.schedule(on_exit)
 			end
 		end,
 	})
@@ -522,24 +525,28 @@ local function attach_actions(prompt_bufnr, map, cwd)
 		end
 	end
 
-	-- Checking out is the one worth reaching for without looking
+	-- Reading the review in cruxi is the one worth reaching for without looking
 	actions.select_default:replace(instead_of_picker(function(cr)
-		-- `enew` keeps the terminal in the window the picker was called from; the
-		-- buffer that was there is still in the list, so `:b#` brings it back
-		vim.cmd.enew()
-		vim.fn.jobstart({ "cr-pull", cr }, { term = true, cwd = cwd })
-		vim.cmd.startinsert()
+		-- Closing the picker caches it, so leaving cruxi can put it back as it was,
+		-- prompt and selection and all — reviews tend to be looked at a few in a row
+		open_review_terminal(cr, cwd, function()
+			require("telescope.builtin").resume()
+		end)
 	end))
 
-	-- <C-o> for "open", and one of the few keys telescope has not already taken for
-	-- movement, preview scrolling, splits and the quickfix list
+	-- <C-o> for "pull it out", and one of the few keys telescope has not already
+	-- taken for movement, preview scrolling, splits and the quickfix list
 	map(
 		{ "i", "n" },
 		"<C-o>",
 		instead_of_picker(function(cr)
-			open_review_terminal(cr, cwd)
+			-- `enew` keeps the terminal in the window the picker was called from; the
+			-- buffer that was there is still in the list, so `:b#` brings it back
+			vim.cmd.enew()
+			vim.fn.jobstart({ "cr-pull", cr }, { term = true, cwd = cwd })
+			vim.cmd.startinsert()
 		end),
-		{ desc = "Open in cruxi" }
+		{ desc = "Check out with cr-pull" }
 	)
 end
 
