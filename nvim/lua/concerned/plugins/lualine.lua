@@ -5,11 +5,20 @@ return {
 	config = function()
 		require("lualine").setup({
 			options = {
-				section_separators = { left = "", right = "" },
-				component_separators = { left = "|", right = "|" },
+				theme = "auto",
 			},
 			sections = {
-				lualine_c = { "filename" },
+				lualine_a = { "mode" },
+				lualine_b = { "branch", "fugitive" },
+				lualine_c = {
+					"filename",
+					function()
+						return vim.ui.progress_status()
+					end,
+				},
+				lualine_x = { "diagnostics", "trouble" },
+				lualine_y = { "diff" },
+				lualine_z = { "location" },
 			},
 		})
 	end,

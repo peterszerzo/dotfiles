@@ -89,13 +89,14 @@ local function package_name(path)
 end
 
 --- The review checked out in the repository at `root`, if there is one.
---- `cr-pull` names its branches CRUX/CR-1234/r2/<their-branch>, and `cr` leaves
---- a `cr: <url>` trailer on the commits it reviews, which covers the reviews you
---- wrote yourself.
+--- `cr-pull` names its branches CRUX/CR-1234/r2/<their-branch>, which we shorten
+--- to CR-1234/r2 (see `shorten_pulled_branch`), and `cr` leaves a `cr: <url>`
+--- trailer on the commits it reviews, which covers the reviews you wrote yourself.
 local function checked_out_cr(root)
 	local branch = vim.system({ "git", "-C", root, "rev-parse", "--abbrev-ref", "HEAD" }, { text = true }):wait()
 	if branch.code == 0 then
-		local cr = vim.trim(branch.stdout):match("^CRUX/(CR%-%d+)/")
+		local name = vim.trim(branch.stdout)
+		local cr = name:match("^CRUX/(CR%-%d+)/") or name:match("^(CR%-%d+)/r%d+$")
 		if cr then
 			return cr
 		end
@@ -106,6 +107,39 @@ local function checked_out_cr(root)
 		return (log.stdout:match("code%.amazon%.com/reviews/(CR%-%d+)"))
 	end
 	return nil
+end
+
+--- The revision number of `cr` that the branch checked out in `root` was pulled
+--- from, if it is a branch `cr-pull` made (under either name).
+local function checked_out_revision(root, cr)
+	local branch = vim.system({ "git", "-C", root, "branch", "--show-current" }, { text = true }):wait()
+	if branch.code ~= 0 then
+		return nil
+	end
+
+	local name = vim.trim(branch.stdout)
+	return name:match("^CRUX/" .. cr .. "/r(%d+)/") or name:match("^" .. cr .. "/r(%d+)$")
+end
+
+--- `cr-pull` has no option for naming its branch, so rename it afterwards from
+--- CRUX/CR-1234/r2/<their-branch> to CR-1234/r2.
+local function shorten_pulled_branch(cwd)
+	local current = vim.system({ "git", "-C", cwd, "branch", "--show-current" }, { text = true }):wait()
+	if current.code ~= 0 then
+		return
+	end
+
+	local name = vim.trim(current.stdout)
+	local cr, revision = name:match("^CRUX/(CR%-%d+)/(r%d+)/")
+	if not cr then
+		return
+	end
+
+	local short = cr .. "/" .. revision
+	local renamed = vim.system({ "git", "-C", cwd, "branch", "-m", name, short }, { text = true }):wait()
+	if renamed.code ~= 0 then
+		notify("Could not rename " .. name .. " to " .. short .. ": " .. vim.trim(renamed.stderr), vim.log.levels.WARN)
+	end
 end
 
 local function relative_time(epoch)
@@ -540,11 +574,36 @@ local function attach_actions(prompt_bufnr, map, cwd)
 		{ "i", "n" },
 		"<C-o>",
 		instead_of_picker(function(cr)
-			-- `enew` keeps the terminal in the window the picker was called from; the
-			-- buffer that was there is still in the list, so `:b#` brings it back
-			vim.cmd.enew()
-			vim.fn.jobstart({ "cr-pull", cr }, { term = true, cwd = cwd })
-			vim.cmd.startinsert()
+			local function pull()
+				-- A pane along the bottom rather than taking over the window
+				vim.cmd("botright 15new")
+				local bufnr = vim.api.nvim_get_current_buf()
+				vim.wo.winfixheight = true
+				vim.fn.jobstart({ "cr-pull", cr }, {
+					term = true,
+					cwd = cwd,
+					on_exit = function(_, code)
+						if code == 0 then
+							vim.schedule(function()
+								shorten_pulled_branch(cwd)
+							end)
+						end
+					end,
+				})
+				vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = bufnr, desc = "Close cr-pull pane" })
+				vim.cmd.startinsert()
+			end
+
+			-- The review page describes the latest revision. If we cannot tell what
+			-- that is, pulling anyway is safer than refusing.
+			with_payload(cr, function(payload)
+				local latest = payload and ((((payload.revision or {}).cr_revision or {}).id or {}).review_revision_id or {}).revision
+				local pulled = checked_out_revision(cwd, cr)
+				if latest and pulled and tostring(latest) == pulled then
+					return notify(("%s revision %s is already checked out"):format(cr, pulled))
+				end
+				pull()
+			end)
 		end),
 		{ desc = "Check out with cr-pull" }
 	)

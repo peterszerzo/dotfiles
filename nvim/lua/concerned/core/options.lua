@@ -46,6 +46,8 @@ opt.winborder = "rounded"
 opt.wrap = false
 opt.signcolumn = "yes:1"
 
+require("vim._core.ui2").enable({})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", {}),
 	desc = "Hightlight selection on yank",
