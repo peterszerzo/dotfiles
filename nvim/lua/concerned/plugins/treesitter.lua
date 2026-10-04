@@ -1,6 +1,7 @@
 -- Parsers to keep installed. Installing is a no-op when they are already present.
 local parsers = {
 	"bash",
+	"rust",
 	"css",
 	"diff",
 	"elm",
