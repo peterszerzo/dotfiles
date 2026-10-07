@@ -24,7 +24,7 @@ cd ~
 rm -rf dotfiles .config/nvim .config/fish .tmux.conf .config/kitty/kitty.conf .config/lazygit/config.yml
 git clone git@github.com:peterszerzo/dotfiles.git
 
-mkdir -p .config .config/kitty .config/lazygit .config/skhd
+mkdir -p .config .config/kitty .config/lazygit .config/skhd .config/yazi
 
 # Set up symlinks
 ln -sv ~/dotfiles/nvim ~/.config
@@ -34,6 +34,7 @@ ln -sv ~/dotfiles/kitty.conf ~/.config/kitty/kitty.conf
 ln -sv ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
 ln -sv ~/dotfiles/lazygit/config.yml ~/Library/Application\ Support/lazygit/config.yml
 ln -sv ~/dotfiles/skhd/skhdrc ~/.config/skhd/skhdrc
+ln -sv ~/dotfiles/yazi/theme.toml ~/.config/yazi/theme.toml
 
 # Install fish plugins from fish_plugins (needs fisher, installed by new-machine.sh)
 fish -c 'fisher update'

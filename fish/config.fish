@@ -76,7 +76,6 @@ end
 # Begin `ql`
 #
 
-
 # Quick links - run `ql --help` for the full API. The link list lives outside
 # this repo so it can hold personal URLs; override the path with $QL_FILE.
 set -q QL_FILE; or set -gx QL_FILE ~/.local/share/ql/links.tsv
@@ -106,10 +105,12 @@ function __ql_url
   return 1
 end
 
-# Fill the {placeholder} and {placeholder=default} tokens of the URL in $argv[1],
-# taking values from the remaining `key=value` and positional args and prompting
-# for whatever is left. The result lands in $__ql_filled rather than on stdout,
-# since the prompts would end up captured along with it.
+# Fill the {placeholder}, {placeholder=default} and
+# {argument name="placeholder" options="a, b, c"} tokens of the URL in $argv[1],
+# taking values from the remaining `key=value` and positional args, falling
+# back to an fzf pick between options (or a plain prompt otherwise). The
+# result lands in $__ql_filled rather than on stdout, since the prompts/fzf
+# would end up captured along with it.
 function __ql_fill
   set -g __ql_filled $argv[1]
   set -l keys
@@ -127,10 +128,26 @@ function __ql_fill
   end
 
   for token in (string match --all --regex '\{[^{}]*\}' -- $argv[1])
-    set -l parts (string split --max 1 = -- (string replace --regex '^\{(.*)\}$' '$1' -- $token))
-    set -l key $parts[1]
+    set -l content (string replace --regex '^\{(.*)\}$' '$1' -- $token)
+    set -l key
     set -l default ''
-    test (count $parts) -eq 2; and set default $parts[2]
+    set -l options
+
+    if string match --quiet --regex '^argument\s' -- $content
+      set key (string match --regex --groups-only 'name="([^"]*)"' -- $content)
+      set -l opts_raw (string match --regex --groups-only 'options="([^"]*)"' -- $content)
+      test -n "$opts_raw"; and set options (string trim -- (string split ',' -- $opts_raw))
+    else
+      set -l parts (string split --max 1 = -- $content)
+      set key $parts[1]
+      test (count $parts) -eq 2; and set default $parts[2]
+    end
+
+    if test -z "$key"
+      echo "ql: could not parse placeholder $token" >&2
+      set -e __ql_filled
+      return 1
+    end
 
     set -l value
     set -l idx (contains --index -- $key $keys)
@@ -139,6 +156,13 @@ function __ql_fill
     else if set -q positional[1]
       set value $positional[1]
       set -e positional[1]
+    else if set -q options[1]
+      if command -q fzf
+        set value (string join \n -- $options | fzf --prompt="$key> ")
+      else
+        read --prompt-str="$key [$options[1]]: " --local reply
+        test -n "$reply"; and set value $reply; or set value $options[1]
+      end
     else
       set -l prompt "$key: "
       test -n "$default"; and set prompt "$key [$default]: "
@@ -219,11 +243,18 @@ function __ql_usage
     'Placeholders:' \
     '  {profile}                     prompts for a value' \
     '  {profile=peterszerzo}         prompts, and empty input takes the default' \
+    '  {argument name="host" options="http://localhost:5173, https://google.com"}' \
+    '                                offers an fzf pick between options (or a' \
+    '                                bracketed-default prompt without fzf)' \
     '' \
     '  Values are passed positionally in the order they appear, or by name:' \
     '    ql add gh "https://github.com/{profile}/{repo=dotfiles}"' \
     '    ql gh octocat hello-world   -> https://github.com/octocat/hello-world' \
     '    ql gh profile=octocat       -> prompts for repo, empty input = dotfiles' \
+    '' \
+    '  ql add dev \'{argument name="host" options="http://localhost:5173, https://google.com"}\'' \
+    '    ql dev                      -> fzf pick between the two hosts' \
+    '    ql dev host=https://google.com -> skips the pick, uses the given value' \
     '' \
     '  Quote URLs containing {braces} when adding them, otherwise fish' \
     '  expands the braces away. Spaces in values become %20, everything' \
@@ -326,8 +357,14 @@ function __ql_placeholders
   set -l url (__ql_url $tokens[2]); or return 0
 
   for token in (string match --all --regex '\{[^{}]*\}' -- $url)
-    set -l spec (string replace --regex '^\{(.*)\}$' '$1' -- $token)
-    printf '%s=\n' (string split --max 1 = -- $spec)[1]
+    set -l content (string replace --regex '^\{(.*)\}$' '$1' -- $token)
+    set -l key
+    if string match --quiet --regex '^argument\s' -- $content
+      set key (string match --regex --groups-only 'name="([^"]*)"' -- $content)
+    else
+      set key (string split --max 1 = -- $content)[1]
+    end
+    test -n "$key"; and printf '%s=\n' $key
   end
 end
 
